@@ -1,7 +1,9 @@
 # Database
+from flask import current_app
 from src.database.db_pg import db
 from src.models.user import User
 from src.utils.security import Security
+from src.utils.send_mail import send_email, configure_mail
 
 
 class AuthService:
@@ -54,6 +56,15 @@ class AuthService:
 
             db.session.add(new_user)
             db.session.commit()
+
+            mail = configure_mail(current_app)
+            isSend = send_email(mail, email, name)
+
+            if not isSend:
+                return {
+                    "message": "Usuario registrado exitosamente, pero no se pudo enviar el correo de bienvenida.",
+                    "success": True,
+                }, 400
 
             return {
                 "message": "Usuario registrado exitosamente.",

@@ -1,7 +1,8 @@
 # Database
 from flask import current_app
+
 from src.database.db_pg import db
-from src.models.user import User
+from src.models.users import Users
 from src.utils.security import Security
 from src.utils.send_mail import send_email, configure_mail
 
@@ -10,7 +11,7 @@ class AuthService:
     @classmethod
     def login_user(cls, email, password):
         try:
-            user = User.query.filter_by(email=email).first()
+            user = Users.query.filter_by(email=email).first()
 
             # Si el usuario no existe o la contraseña es incorrecta, devuelve un error
             # if not user or not check_password_hash(user.password, password):
@@ -30,7 +31,7 @@ class AuthService:
             return {
                 "error": str(e),
                 "success": False,
-            }
+            }, 500
 
     @classmethod
     def register_user(cls, user_data):
@@ -42,18 +43,22 @@ class AuthService:
             date_of_birth = user_data["date_of_birth"]
             cellphone = user_data["cellphone"]
 
-            if User.query.filter_by(email=email).first():
+            if Users.query.filter_by(email=email).first():
                 return {"error": "El usuario ya existe."}, 400
 
-            new_user = User(
+            new_user = Users(
                 email=email,
                 password=password,
                 name=name,
                 lastname=lastname,
                 date_of_birth=date_of_birth,
                 cellphone=cellphone,
+                token_email="token_email",
+                token_phone="token_phone",
+                language="es",
+                role_id=2,
+                created_at="2021-01-01 00:00:00",
             )
-
             db.session.add(new_user)
             db.session.commit()
 
@@ -72,7 +77,8 @@ class AuthService:
             }, 201
 
         except Exception as e:
+            print(e)
             return {
                 "error": str(e),
                 "success": False,
-            }
+            }, 500

@@ -1,9 +1,17 @@
 from flask import Flask
+from dotenv import load_dotenv
+import os
+
 from src.routes.auth import auth_bp
 from src.database.db_pg import db
 from src.utils.send_mail import configure_mail
-from dotenv import load_dotenv
-import os
+
+# Import models
+from src.models.roles import Roles
+from src.models.contacts import Contacts
+from src.models.sessions import Sessions
+from src.models.messages import Messages
+from src.models.users import Users
 
 load_dotenv()
 

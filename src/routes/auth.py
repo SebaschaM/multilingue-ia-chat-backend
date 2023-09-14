@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
-from src.models.user import User
+
 from src.services.auth_service import AuthService
-from src.database.db_pg import db
 from src.middleware.token_required import token_required
 
 
@@ -29,9 +28,9 @@ def register():
             "name",
             "lastname",
             "date_of_birth",
-            "cellphone",
             "email",
             "password",
+            "cellphone",
         ]
         for field in required_fields:
             if field not in user_data:
@@ -40,4 +39,5 @@ def register():
         response, status = AuthService.register_user(user_data)
         return jsonify(response), status
     except Exception as e:
+        print(e)
         return {"error": str(e)}, 500

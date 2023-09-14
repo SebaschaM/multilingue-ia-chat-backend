@@ -16,7 +16,10 @@ class AuthService:
             user = Users.query.filter_by(email=email).first()
 
             if not user or not check_password_hash(user.password, password):
-                return {"error": "Correo electrónico o contraseña incorrectos."}, 401
+                return {
+                    "error": "Correo electrónico o contraseña incorrectos.",
+                    "success": False,
+                }, 401
 
             encoded_token = Security.generate_token(user)
             return {
@@ -43,7 +46,10 @@ class AuthService:
             cellphone = user_data["cellphone"]
 
             if Users.query.filter_by(email=email).first():
-                return {"error": "El usuario ya existe."}, 400
+                return {
+                    "error": "El usuario ya existe.",
+                    "success": False,
+                }, 400
 
             token_email = str(uuid.uuid4())
             new_user = Users(
@@ -90,7 +96,10 @@ class AuthService:
             user = Users.query.filter_by(token_email=token).first()
 
             if not user:
-                return {"error": "El usuario no existe o ya ha sido verificado"}, 400
+                return {
+                    "error": "El usuario no existe o ya ha sido verificado",
+                    "success": False,
+                }, 400
 
             user.token_email = None
             user.user_verified = 1

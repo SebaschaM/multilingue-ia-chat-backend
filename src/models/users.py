@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date
 from sqlalchemy.orm import relationship
 
 from src.database.db_pg import db
@@ -10,7 +10,7 @@ class Users(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(80))
     lastname = Column(String(80))
-    date_of_birth = Column(DateTime)
+    date_of_birth = Column(Date)
     cellphone = Column(String(80))
     email = Column(String(80), unique=True, nullable=False)
     password = Column(String(128), nullable=False)

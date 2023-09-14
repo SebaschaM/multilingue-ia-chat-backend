@@ -56,6 +56,7 @@ class AuthService:
                 token_email="token_email",
                 token_phone="token_phone",
                 language="es",
+                user_verified=0,
                 role_id=2,
                 created_at="2021-01-01 00:00:00",
             )

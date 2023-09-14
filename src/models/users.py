@@ -17,6 +17,7 @@ class Users(db.Model):
     token_email = Column(String(128))
     token_phone = Column(String(128))
     language = Column(String(80))
+    user_verified = Column(Integer, default=0)
     role_id = Column(Integer, ForeignKey("roles.id"))
     created_at = Column(DateTime)
 
@@ -40,6 +41,7 @@ class Users(db.Model):
         token_email=None,
         token_phone=None,
         language=None,
+        user_verified=None,
         role_id=None,
         created_at=None,
     ):
@@ -52,6 +54,7 @@ class Users(db.Model):
         self.token_email = token_email
         self.token_phone = token_phone
         self.language = language
+        self.user_verified = user_verified
         self.role_id = role_id
         self.created_at = created_at
 
@@ -65,6 +68,7 @@ class Users(db.Model):
             "token_email": self.token_email,
             "token_phone": self.token_phone,
             "language": self.language,
+            "user_verified": self.user_verified,
             "role_id": self.role_id,
             "created_at": self.created_at,
         }

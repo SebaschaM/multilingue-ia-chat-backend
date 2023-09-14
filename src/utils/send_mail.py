@@ -39,6 +39,11 @@ def send_email(mail, email, name):
                     border-radius: 10px;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }}
+                .code {{
+                    font-size: 24px;
+                    color: #007bff; /* Puedes cambiar el color según tus preferencias */
+                    font-weight: bold;
+                }}
             </style>
         </head>
         <body>

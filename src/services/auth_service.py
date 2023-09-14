@@ -83,3 +83,26 @@ class AuthService:
                 "error": str(e),
                 "success": False,
             }, 500
+
+    @classmethod
+    def verify_user(cls, token):
+        try:
+            user = Users.query.filter_by(token_email=token).first()
+
+            if not user:
+                return {"error": "El usuario no existe o ya ha sido verificado"}, 400
+
+            user.token_email = None
+            user.user_verified = 1
+            db.session.commit()
+
+            return {
+                "message": "Usuario verificado exitosamente.",
+                "success": True,
+            }, 200
+
+        except Exception as e:
+            return {
+                "error": str(e),
+                "success": False,
+            }, 500

@@ -41,3 +41,17 @@ def register():
     except Exception as e:
         print(e)
         return {"error": str(e)}, 500
+
+
+@auth_bp.route("/verify-email", methods=["GET"])
+def verify_email():
+    try:
+        token = request.args.get("token")
+        if not token:
+            return jsonify({"error": "Token requerido"}), 400
+
+        response, status = AuthService.verify_user(token)
+        return jsonify(response), status
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}, 500

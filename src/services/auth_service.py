@@ -1,5 +1,7 @@
 # Database
 from flask import current_app
+from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
 
 from src.database.db_pg import db
 from src.models.users import Users
@@ -13,10 +15,7 @@ class AuthService:
         try:
             user = Users.query.filter_by(email=email).first()
 
-            # Si el usuario no existe o la contraseña es incorrecta, devuelve un error
-            # if not user or not check_password_hash(user.password, password):
-            #     return {"error": "Correo electrónico o contraseña incorrectos."}, 401
-            if not user or user.password != password:
+            if not user or not check_password_hash(user.password, password):
                 return {"error": "Correo electrónico o contraseña incorrectos."}, 401
 
             encoded_token = Security.generate_token(user)
@@ -37,7 +36,7 @@ class AuthService:
     def register_user(cls, user_data):
         try:
             email = user_data["email"]
-            password = user_data["password"]
+            password = generate_password_hash(user_data["password"])
             name = user_data["name"]
             lastname = user_data["lastname"]
             date_of_birth = user_data["date_of_birth"]
@@ -46,6 +45,7 @@ class AuthService:
             if Users.query.filter_by(email=email).first():
                 return {"error": "El usuario ya existe."}, 400
 
+            token_email = str(uuid.uuid4())
             new_user = Users(
                 email=email,
                 password=password,
@@ -53,8 +53,8 @@ class AuthService:
                 lastname=lastname,
                 date_of_birth=date_of_birth,
                 cellphone=cellphone,
-                token_email="token_email",
-                token_phone="token_phone",
+                token_email=token_email,
+                token_phone=None,
                 language="es",
                 user_verified=0,
                 role_id=2,
@@ -64,7 +64,7 @@ class AuthService:
             db.session.commit()
 
             mail = configure_mail(current_app)
-            isSend = send_email(mail, email, name)
+            isSend = send_email(mail, email, name, token_email)
 
             if not isSend:
                 return {

@@ -1,6 +1,7 @@
 from flask_mail import Mail, Message
-import os
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+import os
 
 load_dotenv()
 
@@ -16,7 +17,11 @@ def configure_mail(current_app):
     return mail
 
 
-def send_email(mail, email, name):
+def send_email(mail, email, name, token=None):
+    expiration_time = datetime.now() + timedelta(minutes=5)
+    expiration_time_str = expiration_time.strftime("%Y-%m-%d %H:%M:%S")
+    verification_link = f"https://tuaplicacion.com/verificar?token={token}"
+
     try:
         msg = Message(
             "Bienvenido a nuestra aplicación",
@@ -25,9 +30,8 @@ def send_email(mail, email, name):
         )
         msg.html = f"""
         <html>
-        <head>
-            <!-- Puedes agregar estilos CSS aquí -->
-            <style>
+            <head>
+                <style>
                 body {{
                     font-family: Arial, sans-serif;
                     background-color: #f0f0f0;
@@ -39,23 +43,51 @@ def send_email(mail, email, name):
                     border-radius: 10px;
                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }}
-                .code {{
-                    font-size: 24px;
-                    color: #007bff; /* Puedes cambiar el color según tus preferencias */
+                .verification-button {{
+                    background-color: #007bff;
+                    color: #ffffff !important;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    text-decoration: none;
                     font-weight: bold;
                 }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <img src="https://logosmarcas.net/wp-content/uploads/2020/09/Microsoft-Logo.png" alt="Logo de la aplicación" width="150">
+                .message-box {{
+                    margin-top: 20px;
+                }}
+                .message-text {{
+                    color: #808080;
+                    font-weight: bold;
+                }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                <img
+                    src="https://logosmarcas.net/wp-content/uploads/2020/09/Microsoft-Logo.png"
+                    alt="Logo de la aplicación"
+                    width="150"
+                />
                 <h1>Bienvenido, {name}!</h1>
                 <p>Gracias por registrarte en nuestra aplicación.</p>
+                <p>Para verificar tu cuenta, haz clic en el siguiente botón:</p>
+                <a class="verification-button" href="{verification_link}" target="_blank"
+                    >
+                    Verificar mi cuenta
+                    </a
+                >
+
+                <div class="message-box">
+                    <p class="message-text">
+                    El enlace de verificación caducará el {expiration_time_str}. Si no has
+                    solicitado la verificación, puedes ignorar este mensaje.
+                    </p>
+                </div>
+
                 <p>Esperamos que disfrutes de tu experiencia con nosotros.</p>
-                <p>Saludos,</p>
-                <p>El equipo de la aplicación</p>
-            </div>
-        </body>
+                <p>Saludos, el equipo de la aplicación</p>
+                </div>
+            </body>
         </html>
         """
         mail.send(msg)

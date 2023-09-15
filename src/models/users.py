@@ -27,7 +27,12 @@ class Users(db.Model):
     )
     sessions = relationship("Sessions", back_populates="user")
     messages_sender = relationship(
-        "Messages", primaryjoin="Users.id==Messages.id_user_sender", backref="user"
+        "Messages", back_populates="user_sender", foreign_keys="Messages.id_user_sender"
+    )
+    messages_receiver = relationship(
+        "Messages",
+        back_populates="user_receiver",
+        foreign_keys="Messages.id_user_receiver",
     )
 
     def __init__(

@@ -16,3 +16,6 @@ class Messages(db.Model):
     user_sender = relationship(
         "Users", back_populates="messages_sender", foreign_keys=[id_user_sender]
     )
+    user_receiver = relationship(
+        "Users", back_populates="messages_receiver", foreign_keys=[id_user_receiver]
+    )

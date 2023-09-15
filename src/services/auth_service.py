@@ -21,6 +21,12 @@ class AuthService:
                     "success": False,
                 }, 401
 
+            if user.user_verified == 0:
+                return {
+                    "error": "El usuario no ha sido verificado.",
+                    "success": False,
+                }, 401
+
             encoded_token = Security.generate_token(user)
             return {
                 "message": "Inicio de sesión exitoso.",

@@ -1,8 +1,11 @@
 from app import create_app
-from src.database.db_pg import db
+from flask_cors import CORS
 from sqlalchemy import text
 
+from src.database.db_pg import db
+
 app = create_app()
+CORS(app)
 
 
 def execute_sql_file(filename):

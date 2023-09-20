@@ -68,7 +68,6 @@ def send_email(mail, email, name, token=None):
                     alt="Logo de la aplicación"
                     width="150"
                 />
-                <h1>Bienvenido, {name}!</h1>
                 <p>Gracias por registrarte en nuestra aplicación.</p>
                 <p>Para verificar tu cuenta, haz clic en el siguiente botón:</p>
                 <a class="verification-button" href="{verification_link}" target="_blank"

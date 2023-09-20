@@ -7,6 +7,20 @@ from src.middleware.token_required import token_required
 auth_bp = Blueprint("auth", __name__)
 
 
+@auth_bp.route("/verify-email-exists", methods=["POST"])
+def verify_email_exists():
+    try:
+        email = request.json.get("email")
+        if not email:
+            return jsonify({"error": "Correo electrónico requerido"}), 400
+
+        response, status = AuthService.verify_email_exists(email)
+        return jsonify(response), status
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}, 500
+
+
 @auth_bp.route("/login", methods=["POST"])
 def login():
     email = request.json.get("email")
@@ -19,7 +33,27 @@ def login():
     return jsonify(response), status
 
 
-@auth_bp.route("/register", methods=["POST"])
+@auth_bp.route("/register-no-full", methods=["POST"])
+def register_no_full():
+    try:
+        user_data = request.get_json()
+
+        required_fields = [
+            "email",
+            "password",
+        ]
+        for field in required_fields:
+            if field not in user_data:
+                return jsonify({"error": f"El campo '{field}' es requerido."}), 400
+
+        response, status = AuthService.register_user_no_full(user_data)
+        return jsonify(response), status
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}, 500
+
+
+@auth_bp.route("/register", methods=["PUT"])
 def register():
     try:
         user_data = request.get_json()
@@ -29,7 +63,7 @@ def register():
             "lastname",
             "date_of_birth",
             "email",
-            "password",
+            # "password",
             "cellphone",
         ]
         for field in required_fields:
@@ -44,7 +78,7 @@ def register():
 
 
 @auth_bp.route("/verify-email", methods=["GET"])
-def verify_email():
+def verify_user():
     try:
         token = request.args.get("token")
         if not token:

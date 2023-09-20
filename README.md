@@ -53,6 +53,9 @@ Asegúrate de tener PostgreSQL instalado:
     docker-compose up -d
     ```
 
+## Documentación de la API 📖
+- POSTMAN: https://documenter.getpostman.com/view/20632691/2s9YC5xXso
+
 ## Construido con 🛠️
 - [Python](https://www.python.org/) - Lenguaje de programación
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/) - Framework de Python

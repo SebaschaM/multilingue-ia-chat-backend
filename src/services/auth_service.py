@@ -95,6 +95,7 @@ class AuthService:
 
             mail = configure_mail(current_app)
             isSend = send_email(mail, email, None, token_email)
+            print("token", token_email)
 
             if not isSend:
                 return {

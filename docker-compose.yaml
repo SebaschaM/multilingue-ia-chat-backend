@@ -14,19 +14,19 @@ services:
       - "5433:5432"
     networks:
       - backend
-  web:
-    container_name: multilingue-backend
-    build: .
-    restart: always
-    command: python run.py
-    volumes:
-      - .:/code
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    networks:
-      - backend
+  # web:
+  #   container_name: multilingue-backend
+  #   build: .
+  #   restart: always
+  #   command: python run.py
+  #   volumes:
+  #     - .:/code
+  #   ports:
+  #     - "5000:5000"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - backend
 
 volumes:
   postgres_data:

@@ -95,7 +95,7 @@ class AuthService:
 
             mail = configure_mail(current_app)
             isSend = send_email(mail, email, None, token_email)
-            print("token", token_email)
+            print("token", token_email) #TODO: Impreso por el error del correo para validar email por postman
 
             if not isSend:
                 return {

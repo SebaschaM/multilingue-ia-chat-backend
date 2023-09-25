@@ -15,7 +15,7 @@ class Security:
             "iat": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(days=1),
             "email": authenticated_user.email,
-            "name": authenticated_user.name,
+            "fullname": authenticated_user.fullname,
         }
 
         # El metodo .encode encripta el payload y devuelve un objeto de tipo bytes

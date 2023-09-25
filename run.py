@@ -18,7 +18,7 @@ def execute_sql_file(filename):
 
 with app.app_context():
     db.create_all()
-    # execute_sql_file("./init.sql")
+    execute_sql_file("./init.sql")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000, host="0.0.0.0")
+    app.run(debug=False, port=5000, host="0.0.0.0")

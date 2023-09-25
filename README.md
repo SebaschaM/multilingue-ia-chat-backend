@@ -8,6 +8,34 @@
 </div>
 
 ---
+## Configuracion inicial
+Clonar el archivo .env.template y renombrarlo a .env
+```bash
+DATABASE_URL=postgresql://postgres:sebas@localhost:5433/multilingue
+# DATABASE_URL=postgresql://postgres:sebas@db:5432/multilingue
+SECRET_KEY=
+
+MAIL_SERVER=smtp.googlemail.com
+MAIL_USERNAME=
+MAIL_PASSWORD=
+```
+#### Detalles:
+- DATABASE_URL: URL de la base de datos
+- SECRET_KEY: Llave secreta para el manejo de sesiones y generacion de tokens
+- MAIL_SERVER: Servidor de correo
+- MAIL_USERNAME: Usuario de correo
+- MAIL_PASSWORD: Contraseña de correo
+En los casos de MAIL_USERNAME y MAIL_PASSWORD, se recomienda usar una cuenta de correo de gmail, y habilitar el acceso a aplicaciones menos seguras. Para mas informacion, puede consultar el siguiente enlace: https://support.google.com/accounts/answer/6010255?hl=es
+## Crear entorno virtual
+```bash
+python -m venv venv
+```
+
+## Activar entorno virtual
+```bash
+./venv/Scripts/activate
+```
+
 ## Instalación de requirements.txt 🗒️
 
 Asegúrate de tener Python instalado y sigue estos pasos para instalar las dependencias de tu proyecto:

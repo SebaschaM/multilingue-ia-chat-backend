@@ -11,7 +11,6 @@ from flask_socketio import SocketIO
 # Routes Admin
 from src.routes.admin.auth_admin import auth_admin_bp
 
-# from src.routes.message import message_bp
 
 # Routes client
 from src.routes.client.auth_client import auth_client_bp
@@ -52,4 +51,9 @@ def create_app():
 if __name__ == "__main__":
     # Inicializa SocketIO solo si el archivo se ejecuta directamente
     socketio.run(create_app(), debug=True)
-from src.sockets.socketios_event import handle_connect, handle_message
+from src.sockets.socketios_event import (
+    handle_connect,
+    handle_login,
+    handle_create_private_room,
+    handle_join_private_room,
+)

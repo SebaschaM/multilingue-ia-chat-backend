@@ -7,15 +7,8 @@ class Messages(db.Model):
     __tablename__ = "messages"
 
     id = Column(Integer, primary_key=True)
-    id_user_sender = Column(Integer, ForeignKey("users.id"))
-    id_user_receiver = Column(Integer, ForeignKey("users.id"))
+    id_user_sender = Column(Integer)
+    id_user_receiver = Column(Integer)
     message_text = Column(String)
     created_at = Column(DateTime)
     read_at = Column(DateTime)
-
-    user_sender = relationship(
-        "Users", back_populates="messages_sender", foreign_keys=[id_user_sender]
-    )
-    user_receiver = relationship(
-        "Users", back_populates="messages_receiver", foreign_keys=[id_user_receiver]
-    )

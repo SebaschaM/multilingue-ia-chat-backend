@@ -8,9 +8,7 @@ class Users(db.Model):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(80))
-    lastname = Column(String(80))
-    date_of_birth = Column(Date)
+    fullname = Column(String(80))
     cellphone = Column(String(80))
     email = Column(String(80), unique=True, nullable=False)
     password = Column(String(128), nullable=False)
@@ -21,28 +19,24 @@ class Users(db.Model):
     role_id = Column(Integer, ForeignKey("roles.id"))
     created_at = Column(DateTime)
 
-    role = relationship("Roles", back_populates="users")
-    contacts = relationship(
-        "Contacts", primaryjoin="Users.id==Contacts.user_id", backref="user"
+    role = relationship("Roles", back_populates="users", uselist=False)
+    sessions = relationship(
+        "Sessions", primaryjoin="Users.id==Sessions.user_id", backref="user_sessions"
     )
-    sessions = relationship("Sessions", back_populates="user")
-    messages_sender = relationship(
-        "Messages", back_populates="user_sender", foreign_keys="Messages.id_user_sender"
-    )
-    messages_receiver = relationship(
-        "Messages",
-        back_populates="user_receiver",
-        foreign_keys="Messages.id_user_receiver",
+    conversations = relationship(
+        "Conversations",
+        back_populates="user",
+        # primaryjoin="Users.id==Conversations.user_id",
+        # backref="user_conversations",
+        # overlaps="user_conversations,coknversations",
     )
 
     def __init__(
         self,
         email,
         password,
-        name,
-        lastname,
-        date_of_birth,
-        cellphone,
+        fullname=None,
+        cellphone=None,
         token_email=None,
         token_phone=None,
         language=None,
@@ -52,9 +46,7 @@ class Users(db.Model):
     ):
         self.email = email
         self.password = password
-        self.name = name
-        self.lastname = lastname
-        self.date_of_birth = date_of_birth
+        self.fullname = fullname
         self.cellphone = cellphone
         self.token_email = token_email
         self.token_phone = token_phone
@@ -66,9 +58,7 @@ class Users(db.Model):
     def to_dict(self):
         return {
             "email": self.email,
-            "name": self.name,
-            "lastname": self.lastname,
-            "date_of_birth": self.date_of_birth,
+            "fullname": self.fullname,
             "cellphone": self.cellphone,
             "token_email": self.token_email,
             "token_phone": self.token_phone,

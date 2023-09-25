@@ -14,4 +14,4 @@ class Sessions(db.Model):
     ip_address = Column(String(80))
     user_agent = Column(String(80))
 
-    user = relationship("Users", back_populates="sessions")
+    user = relationship("Users", back_populates="sessions", overlaps="user_sessions")

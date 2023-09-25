@@ -1,6 +1,7 @@
 # Database
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 import uuid
 
 from src.database.db_pg import db
@@ -9,7 +10,7 @@ from src.utils.security import Security
 from src.utils.send_mail import send_email, configure_mail
 
 
-class AuthService:
+class AuthAdminService:
     @classmethod
     def verify_email_exists(cls, email):
         try:
@@ -64,14 +65,20 @@ class AuthService:
             }, 500
 
     @classmethod
-    def register_user_no_full(cls, user_data):
+    def register_user(cls, user_data):
         try:
             email = user_data["email"]
             password = generate_password_hash(user_data["password"])
+            fullname = user_data["fullname"]
+            cellphone = user_data["cellphone"]
+            language = user_data["language"]
+            role_id = user_data["role_id"]
 
-            if Users.query.filter_by(email=email).first():
+            user = Users.query.filter_by(email=email).first()
+
+            if user:
                 return {
-                    "error": "El usuario ya existe.",
+                    "error": "El usuario ya existe",
                     "success": False,
                 }, 400
 
@@ -79,23 +86,20 @@ class AuthService:
             new_user = Users(
                 email=email,
                 password=password,
+                fullname=fullname,
+                cellphone=cellphone,
                 token_email=token_email,
-                name=None,
-                lastname=None,
-                date_of_birth=None,
-                cellphone=None,
-                token_phone=None,
-                language="es",
+                language=language,
                 user_verified=0,
-                role_id=2,
-                created_at="2021-01-01 00:00:00",
+                role_id=role_id,
+                created_at=datetime.now(),
             )
+
             db.session.add(new_user)
             db.session.commit()
 
             mail = configure_mail(current_app)
             isSend = send_email(mail, email, None, token_email)
-            print("token", token_email) #TODO: Impreso por el error del correo para validar email por postman
 
             if not isSend:
                 return {
@@ -105,55 +109,6 @@ class AuthService:
 
             return {
                 "message": "Usuario registrado exitosamente, porfavor revise su correo",
-                "success": True,
-            }, 201
-
-        except Exception as e:
-            print(e)
-            return {
-                "error": str(e),
-                "success": False,
-            }, 500
-
-    @classmethod
-    def register_user(cls, user_data):
-        try:
-            email = user_data["email"]
-            # password = generate_password_hash(user_data["password"])
-            name = user_data["name"]
-            lastname = user_data["lastname"]
-            date_of_birth = user_data["date_of_birth"]
-            cellphone = user_data["cellphone"]
-
-            user = Users.query.filter_by(email=email).first()
-
-            if not user:
-                return {
-                    "error": "El usuario no existe.",
-                    "success": False,
-                }, 400
-
-            # token_email = str(uuid.uuid4())
-            # update
-            user.name = name
-            user.lastname = lastname
-            user.date_of_birth = date_of_birth
-            user.cellphone = cellphone
-            # user.password = password
-            # user.token_email = token_email
-            db.session.commit()
-
-            # mail = configure_mail(current_app)
-            # isSend = send_email(mail, email, name, token_email)
-
-            # if not isSend:
-            #     return {
-            #         "message": "Usuario registrado exitosamente",
-            #         "success": True,
-            #     }, 400
-
-            return {
-                "message": "Usuario registrado exitosamente.",
                 "success": True,
             }, 201
 

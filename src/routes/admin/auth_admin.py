@@ -1,90 +1,70 @@
 from flask import Blueprint, request, jsonify
 
-from src.services.auth_service import AuthService
+from src.services.admin.auth_admin_service import AuthAdminService
 from src.middleware.token_required import token_required
 
 
-auth_bp = Blueprint("auth", __name__)
+auth_admin_bp = Blueprint("admin/auth", __name__)
 
 
-@auth_bp.route("/verify-email-exists", methods=["POST"])
+@auth_admin_bp.route("/verify-email-exists", methods=["POST"])
 def verify_email_exists():
     try:
         email = request.json.get("email")
         if not email:
             return jsonify({"error": "Correo electrónico requerido"}), 400
 
-        response, status = AuthService.verify_email_exists(email)
+        response, status = AuthAdminService.verify_email_exists(email)
         return jsonify(response), status
     except Exception as e:
         print(e)
         return {"error": str(e)}, 500
 
 
-@auth_bp.route("/login", methods=["POST"])
+@auth_admin_bp.route("/login", methods=["POST"])
 def login():
     email = request.json.get("email")
     password = request.json.get("password")
 
     if not email or not password:
-        return jsonify({"error": "Usuario y contraseña requeridos"}), 400
+        return jsonify({"error": "Correo y contraseña requeridos"}), 400
 
-    response, status = AuthService.login_user(email, password)
+    response, status = AuthAdminService.login_user(email, password)
     return jsonify(response), status
 
 
-@auth_bp.route("/register-no-full", methods=["POST"])
-def register_no_full():
+@auth_admin_bp.route("/register", methods=["POST"])
+def register():
     try:
         user_data = request.get_json()
 
         required_fields = [
             "email",
             "password",
-        ]
-        for field in required_fields:
-            if field not in user_data:
-                return jsonify({"error": f"El campo '{field}' es requerido."}), 400
-
-        response, status = AuthService.register_user_no_full(user_data)
-        return jsonify(response), status
-    except Exception as e:
-        print(e)
-        return {"error": str(e)}, 500
-
-
-@auth_bp.route("/register", methods=["PUT"])
-def register():
-    try:
-        user_data = request.get_json()
-
-        required_fields = [
-            "name",
-            "lastname",
-            "date_of_birth",
-            "email",
-            # "password",
+            "fullname",
             "cellphone",
+            "language",
+            "role_id",
         ]
         for field in required_fields:
             if field not in user_data:
                 return jsonify({"error": f"El campo '{field}' es requerido."}), 400
 
-        response, status = AuthService.register_user(user_data)
+        response, status = AuthAdminService.register_user(user_data)
         return jsonify(response), status
     except Exception as e:
         print(e)
         return {"error": str(e)}, 500
 
 
-@auth_bp.route("/verify-email", methods=["GET"])
+@auth_admin_bp.route("/verify-email", methods=["GET"])
 def verify_user():
     try:
         token = request.args.get("token")
         if not token:
             return jsonify({"error": "Token requerido"}), 400
 
-        response, status = AuthService.verify_user(token)
+        response, status = AuthAdminService.verify_user(token)
         return jsonify(response), status
     except Exception as e:
         print(e)

@@ -1,5 +1,6 @@
 from flask import Blueprint
-from src.services.auth_service import AuthService
+
+# from src.services.auth_service import AuthService
 from src.middleware.token_required import token_required
 from app import socketio
 from flask_socketio import join_room, rooms, emit, close_room

@@ -67,7 +67,6 @@ class AuthAdminService:
     @classmethod
     def register_user(cls, user_data):
         try:
-            print("almenos")
             email = user_data["email"]
             password = generate_password_hash(user_data["password"])
             fullname = user_data["fullname"]

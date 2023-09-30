@@ -4,27 +4,12 @@ from flask_cors import CORS
 import logging
 import os
 
-# Import socket io
-from flask_socketio import SocketIO
-
-
-# Routes Admin
-from src.routes.admin.auth_admin import auth_admin_bp
-
-
-# Routes client
-from src.routes.client.auth_client import auth_client_bp
-
 from src.database.db_pg import db
 from src.utils.send_mail import configure_mail
 
-# Import models
-from src.models.roles import Roles
-from src.models.conversations import Conversations
-from src.models.sessions import Sessions
-from src.models.messages import Messages
-from src.models.users import Users
-from src.models.clients import Clients
+# Import socket io
+from flask_socketio import SocketIO
+from src.routes import blueprints
 
 load_dotenv()
 cors_allowed_origins = "*"
@@ -40,9 +25,9 @@ def create_app():
     db.init_app(app)
     socketio.init_app(app)
 
-    app.register_blueprint(auth_admin_bp)
-    app.register_blueprint(auth_client_bp)
-    # app.register_blueprint(message_bp)
+    for blueprint in blueprints:
+        app.register_blueprint(blueprint)
+
     mail = configure_mail(app)
     return app
 

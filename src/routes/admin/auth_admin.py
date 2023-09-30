@@ -43,7 +43,7 @@ def register():
             "password",
             "fullname",
             "cellphone",
-            "language",
+            "language_id",
             "role_id",
         ]
         for field in required_fields:

@@ -67,11 +67,12 @@ class AuthAdminService:
     @classmethod
     def register_user(cls, user_data):
         try:
+            print("almenos")
             email = user_data["email"]
             password = generate_password_hash(user_data["password"])
             fullname = user_data["fullname"]
             cellphone = user_data["cellphone"]
-            language = user_data["language"]
+            language_id = user_data["language_id"]
             role_id = user_data["role_id"]
 
             user = Users.query.filter_by(email=email).first()
@@ -89,7 +90,7 @@ class AuthAdminService:
                 fullname=fullname,
                 cellphone=cellphone,
                 token_email=token_email,
-                language=language,
+                language_id=language_id,
                 user_verified=0,
                 role_id=role_id,
                 created_at=datetime.now(),

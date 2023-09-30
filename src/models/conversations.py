@@ -18,14 +18,12 @@ class Conversations(db.Model):
     client = relationship(
         "Clients",
         back_populates="conversations",
-        # foreign_keys=[client_conversation_id],
-        # backref="conversations_client",
-        # overlaps="conversations",
     )
     user = relationship(
         "Users",
         back_populates="conversations",
-        # foreign_keys=[user_id],
-        # backref="conversations_user",
-        # overlaps="user_conversations",
+    )
+
+    conversations_tags = relationship(
+        "Conversations_Tags", back_populates="conversation"
     )

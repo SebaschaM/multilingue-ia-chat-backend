@@ -11,15 +11,22 @@ class Clients(db.Model):
     fullname = Column(String(80))
     cellphone = Column(String(80))
     email = Column(String(80), unique=True, nullable=False)
-    language = Column(String(80))
+    language_id = Column(Integer, ForeignKey("languages.id"))
     created_at = Column(DateTime)
 
     conversations = relationship(
         "Conversations",
-        # primaryjoin="Clients.id==Conversations.client_conversation_id",
-        # backref="client_conversations",
         back_populates="client",
-        # overlaps="client_conversations,conversations",
+    )
+
+    language = relationship(
+        "Languages",
+        back_populates="clients",
+    )
+
+    requests = relationship(
+        "Requests",
+        back_populates="client",
     )
 
     def __init__(

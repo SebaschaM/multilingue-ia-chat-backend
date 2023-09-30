@@ -10,5 +10,7 @@ class Messages(db.Model):
     id_user_sender = Column(Integer)
     id_user_receiver = Column(Integer)
     message_text = Column(String)
+    message_traslated_text = Column(String)
+    message_read = Column(Integer)
     created_at = Column(DateTime)
     read_at = Column(DateTime)

@@ -19,6 +19,7 @@ class Users(db.Model):
     role_id = Column(Integer, ForeignKey("roles.id"))
     attempt_counter = Column(Integer, default=0)
     block_until = Column(DateTime)
+    blocked = Column(Integer, default=0)
     created_at = Column(DateTime)
 
     role = relationship("Roles", back_populates="users", uselist=False)
@@ -53,6 +54,9 @@ class Users(db.Model):
         language_id=None,
         user_verified=None,
         role_id=None,
+        attempt_counter=None,
+        block_until=None,
+        blocked=None,
         created_at=None,
     ):
         self.email = email
@@ -64,6 +68,9 @@ class Users(db.Model):
         self.language_id = language_id
         self.user_verified = user_verified
         self.role_id = role_id
+        self.attempt_counter = attempt_counter
+        self.block_until = block_until
+        self.blocked = blocked
         self.created_at = created_at
 
     def to_dict(self):
@@ -84,5 +91,8 @@ class Users(db.Model):
                 "id": self.role.id,
                 "name": self.role.name_role,
             },
+            "attempt_counter": self.attempt_counter,
+            "block_until": self.block_until,
+            "blocked": self.blocked,
             "created_at": self.created_at,
         }

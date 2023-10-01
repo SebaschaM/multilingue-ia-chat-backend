@@ -1,7 +1,7 @@
 # Database
 from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 
 from src.database.db_pg import db
@@ -39,6 +39,23 @@ class AuthAdminService:
             user = Users.query.filter_by(email=email).first()
 
             if not user or not check_password_hash(user.password, password):
+                if user and user.blocked == 0:
+                    user.attempt_counter += 1
+
+                    if user.attempt_counter == 4 or (
+                        user.attempt_counter == 8 and user.block_until < datetime.now()
+                    ):
+                        user.block_until = datetime.now() + timedelta(
+                            minutes=5 if user.attempt_counter == 4 else 30
+                        )
+                    elif (
+                        user.attempt_counter == 12 and user.block_until < datetime.now()
+                    ):
+                        user.block_until = datetime.now() + timedelta(hours=24)
+                        user.attempt_counter = 0
+                        user.blocked = 1
+
+                    db.session.commit()
                 return {
                     "error": "Correo electrónico o contraseña incorrectos.",
                     "success": False,
@@ -50,7 +67,16 @@ class AuthAdminService:
                     "success": False,
                 }, 401
 
+            if user.blocked == 1:
+                return {
+                    "error": "El usuario ha sido bloqueado, intentelo mas tarde.",
+                    "success": False,
+                }, 401
+
             encoded_token = Security.generate_token(user)
+            user.attempt_counter = 0
+            user.block_until = None
+            db.session.commit()
             return {
                 "message": "Inicio de sesión exitoso.",
                 "user": user.to_dict(),
@@ -59,10 +85,8 @@ class AuthAdminService:
             }, 200
 
         except Exception as e:
-            return {
-                "error": str(e),
-                "success": False,
-            }, 500
+            # Log the error here
+            return {"error": "Ocurrió un error inesperado.", "success": False}, 500
 
     @classmethod
     def register_user(cls, user_data):

@@ -25,7 +25,7 @@ def register_no_full():
     try:
         client_data = request.get_json()
 
-        required_fields = ["email", "fullname", "cellphone", "language"]
+        required_fields = ["email", "fullname", "cellphone", "language_id"]
         for field in required_fields:
             if field not in client_data:
                 return jsonify({"error": f"El campo '{field}' es requerido."}), 400

@@ -51,7 +51,7 @@ class AuthClientService:
                 email=user_data["email"],
                 fullname=user_data["fullname"],
                 cellphone=user_data["cellphone"],
-                language=user_data["language"],
+                language_id=user_data["language_id"],
                 created_at=datetime.now(),
             )
             db.session.add(new_client)

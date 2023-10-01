@@ -34,11 +34,11 @@ class Clients(db.Model):
         email,
         fullname=None,
         cellphone=None,
-        language=None,
+        language_id=None,
         created_at=None,
     ):
         self.email = email
         self.fullname = fullname
         self.cellphone = cellphone
-        self.language = language
+        self.language_id = language_id
         self.created_at = created_at

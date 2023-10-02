@@ -15,3 +15,14 @@ class Sessions(db.Model):
     user_agent = Column(String(80))
 
     user = relationship("Users", back_populates="sessions", overlaps="user_sessions")
+
+    def to_dict():
+        return {
+            "id": self.id,
+            "user": self.user.to_dict(),
+            "token": self.token,
+            "created_at": self.created_at,
+            "expires_at": self.expires_at,
+            "ip_address": self.ip_address,
+            "user_agent": self.user_agent,
+        }

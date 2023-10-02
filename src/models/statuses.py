@@ -13,4 +13,13 @@ class Statuses(db.Model):
     background_color = Column(String(80))
     color = Column(String(80))
 
-    request_types = relationship("Requests", back_populates="status")
+    requests = relationship("Requests", back_populates="status")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name_status": self.name_status,
+            "description": self.description,
+            "background_color": self.background_color,
+            "color": self.color,
+        }

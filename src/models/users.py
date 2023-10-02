@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 from src.database.db_pg import db
 
@@ -20,7 +21,7 @@ class Users(db.Model):
     attempt_counter = Column(Integer, default=0)
     block_until = Column(DateTime)
     blocked = Column(Integer, default=0)
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.now())
 
     role = relationship("Roles", back_populates="users", uselist=False)
     sessions = relationship(
@@ -80,17 +81,9 @@ class Users(db.Model):
             "cellphone": self.cellphone,
             "token_email": self.token_email,
             "token_phone": self.token_phone,
-            "language": {
-                "id": self.language.id,
-                "name": self.language.name_language,
-                "code": self.language.code_language,
-                "flag_img": self.language.flag_img,
-            },
+            "language": self.language.to_dict(),
             "user_verified": self.user_verified,
-            "role": {
-                "id": self.role.id,
-                "name": self.role.name_role,
-            },
+            "role": self.role.to_dict(),
             "attempt_counter": self.attempt_counter,
             "block_until": self.block_until,
             "blocked": self.blocked,

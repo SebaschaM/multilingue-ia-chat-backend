@@ -14,3 +14,11 @@ class Languages(db.Model):
 
     users = relationship("Users", back_populates="language")
     clients = relationship("Clients", back_populates="language")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "code_language": self.code_language,
+            "name_language": self.name_language,
+            "flag_img": self.flag_img,
+        }

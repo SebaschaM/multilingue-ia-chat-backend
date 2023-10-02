@@ -11,3 +11,9 @@ class Roles(db.Model):
     name_role = Column(String(80))
 
     users = relationship("Users", back_populates="role")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name_role": self.name_role,
+        }

@@ -116,7 +116,6 @@ class AuthAdminService:
                 language_id=language_id,
                 user_verified=0,
                 role_id=role_id,
-                created_at=datetime.now(),
             )
 
             db.session.add(new_user)

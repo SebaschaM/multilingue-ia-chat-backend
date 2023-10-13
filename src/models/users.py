@@ -22,6 +22,7 @@ class Users(db.Model):
     block_until = Column(DateTime)
     blocked = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.now())
+    last_login = Column(Date)
 
     role = relationship("Roles", back_populates="users", uselist=False)
     sessions = relationship(

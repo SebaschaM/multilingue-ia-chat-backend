@@ -8,6 +8,7 @@ from src.database.db_pg import db
 from src.models.users import Users
 from src.utils.security import Security
 from src.utils.send_mail import send_email, configure_mail
+from src.utils.validations import Validations
 
 
 class AuthAdminService:
@@ -36,26 +37,78 @@ class AuthAdminService:
     @classmethod
     def login_user(cls, email, password):
         try:
+            isValidEmail = Validations.validateEmail(email)
+            if not isValidEmail:
+                return {
+                    "error": "El correo electrónico no es válido",
+                    "success": False,
+                }, 400
+
             user = Users.query.filter_by(email=email).first()
+            if user is None:
+                return {
+                    "error": "El correo electrónico no existe.",
+                    "success": False,
+                }, 401
 
-            if not user or not check_password_hash(user.password, password):
-                if user and user.blocked == 0:
-                    user.attempt_counter += 1
+            if user.block_until is not None:
+                if user.block_until > datetime.now():
+                    time_rest = user.block_until - datetime.now()
+                    time_rest_minutes = time_rest.seconds // 60
 
-                    if user.attempt_counter == 4 or (
-                        user.attempt_counter == 8 and user.block_until < datetime.now()
-                    ):
-                        user.block_until = datetime.now() + timedelta(
-                            minutes=5 if user.attempt_counter == 4 else 30
-                        )
-                    elif (
-                        user.attempt_counter == 12 and user.block_until < datetime.now()
-                    ):
-                        user.block_until = datetime.now() + timedelta(hours=24)
-                        user.attempt_counter = 0
-                        user.blocked = 1
+                    return {
+                        "error": "La cuenta se encuentra bloqueada, intentelo en {} minutos.".format(
+                            time_rest_minutes
+                        ),
+                        "success": False,
+                    }, 401
 
+                else:
+                    user.block_until = None
+                    user.blocked = 0
                     db.session.commit()
+
+            if user.blocked == 1:
+                return {
+                    "error": "El usuario ha sido bloqueado, intentelo mas tarde o contacte con el administrador.",
+                    "success": False,
+                }, 401
+
+            if not check_password_hash(user.password, password):
+                user.attempt_counter += 1
+                db.session.commit()
+
+                if user.attempt_counter == 4:
+                    user.block_until = datetime.now() + timedelta(minutes=5)
+                    user.blocked = 1
+                    db.session.commit()
+
+                    return {
+                        "error": "La cuenta se ha bloqueado por 5 minutos.",
+                        "success": False,
+                    }, 401
+
+                elif user.attempt_counter == 8:
+                    user.block_until = datetime.now() + timedelta(hours=1)
+                    user.blocked = 1
+                    db.session.commit()
+
+                    return {
+                        "error": "La cuenta se ha bloqueado por 1 hora.",
+                        "success": False,
+                    }, 401
+
+                elif user.attempt_counter == 12:
+                    user.block_until = datetime.now() + timedelta(days=1)
+                    user.blocked = 1
+                    user.attempt_counter = 0
+                    db.session.commit()
+
+                    return {
+                        "error": "La cuenta se ha bloqueado por 1 día.",
+                        "success": False,
+                    }, 401
+
                 return {
                     "error": "Correo electrónico o contraseña incorrectos.",
                     "success": False,
@@ -67,15 +120,10 @@ class AuthAdminService:
                     "success": False,
                 }, 401
 
-            if user.blocked == 1:
-                return {
-                    "error": "El usuario ha sido bloqueado, intentelo mas tarde.",
-                    "success": False,
-                }, 401
-
             encoded_token = Security.generate_token(user)
             user.attempt_counter = 0
             user.block_until = None
+            user.last_login = datetime.now()
             db.session.commit()
             return {
                 "message": "Inicio de sesión exitoso.",
@@ -85,7 +133,6 @@ class AuthAdminService:
             }, 200
 
         except Exception as e:
-            # Log the error here
             return {"error": "Ocurrió un error inesperado.", "success": False}, 500
 
     @classmethod
@@ -98,8 +145,14 @@ class AuthAdminService:
             language_id = user_data["language_id"]
             role_id = user_data["role_id"]
 
-            user = Users.query.filter_by(email=email).first()
+            isValidEmail = Validations.validateEmail(email)
+            if not isValidEmail:
+                return {
+                    "error": "El correo electrónico no es válido",
+                    "success": False,
+                }, 400
 
+            user = Users.query.filter_by(email=email).first()
             if user:
                 return {
                     "error": "El usuario ya existe",

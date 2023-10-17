@@ -91,6 +91,8 @@ Asegúrate de tener PostgreSQL instalado:
 - [PostgreSQL](https://www.postgresql.org/) - Base de datos
 - [Docker Compose](https://docs.docker.com/compose/) - Orquestador de contenedores
 
+## Autores ✒️
+
 
 
 

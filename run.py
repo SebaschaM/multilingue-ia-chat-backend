@@ -11,6 +11,7 @@ with app.app_context():
     db.create_all()
     create_seed()
 
+print("Server running on port 5000")
 
 if __name__ == "__main__":
     app.run(debug=False, port=5000, host="0.0.0.0")

@@ -11,10 +11,14 @@ from src.database.db_pg import db
 from src.utils.send_mail import configure_mail
 from src.utils.schedules import Schedules
 from src.routes import blueprints
+from src.sockets.user.socketio_events import (
+    handle_assign_user_to_room,
+    handle_send_message,
+    handle_close_room,
+    socketio,
+)
 
 load_dotenv()
-socketio = SocketIO(cors_allowed_origins="*")
-
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -26,7 +30,7 @@ limiter = Limiter(
     get_remote_address,
     app=app,
     default_limits=["15 per minute"],
-    storage_uri="memory://",  # De prueba, cambiar a redis
+    storage_uri="memory://",
     strategy="fixed-window",
 )
 
@@ -50,16 +54,5 @@ def create_app():
     programador = BackgroundScheduler(daemon=True)
     programador.add_job(Schedules.block_users, "interval", seconds=10, args=(app, db))
     programador.start()
+
     return app
-
-
-# # !Esto no deberia estar aqui
-# if __name__ == "__main__":
-#     # Inicializa SocketIO solo si el archivo se ejecuta directamente
-#     socketio.run(create_app(), debug=True)
-# from src.sockets.socketios_event import (
-#     handle_connect,
-#     handle_login,
-#     handle_create_private_room,
-#     handle_join_private_room,
-# )

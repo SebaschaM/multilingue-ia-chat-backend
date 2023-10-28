@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, make_response, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_socketio import SocketIO
@@ -25,10 +25,21 @@ socketio.init_app(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["15 per minute", "5 per second"],
+    default_limits=["15 per minute"],
     storage_uri="memory://",  # De prueba, cambiar a redis
     strategy="fixed-window",
 )
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return (
+        jsonify(
+            success=False,
+            message=f"Has superado el límite de solicitudes, vuelve a intentarlo en un minuto",
+        ),
+        429,
+    )
 
 
 def create_app():

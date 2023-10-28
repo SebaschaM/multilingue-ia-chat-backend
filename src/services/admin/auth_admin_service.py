@@ -55,10 +55,19 @@ class AuthAdminService:
                 if user.block_until > datetime.now():
                     time_rest = user.block_until - datetime.now()
                     time_rest_minutes = time_rest.seconds // 60
+                    time_rest_hours = time_rest_minutes // 60
+
+                    if time_rest_minutes <= 60:
+                        return {
+                            "error": "La cuenta se encuentra bloqueada, intentelo en {} minutos.".format(
+                                time_rest_minutes
+                            ),
+                            "success": False,
+                        }, 401
 
                     return {
-                        "error": "La cuenta se encuentra bloqueada, intentelo en {} minutos.".format(
-                            time_rest_minutes
+                        "error": "La cuenta se encuentra bloqueada, intentelo en {} hora(s).".format(
+                            time_rest_hours
                         ),
                         "success": False,
                     }, 401
@@ -75,7 +84,9 @@ class AuthAdminService:
                 }, 401
 
             if not check_password_hash(user.password, password):
+                count_temp = 4
                 user.attempt_counter += 1
+                count_temp = cls.__counter_attempts(count_temp, user.attempt_counter)
                 db.session.commit()
 
                 if user.attempt_counter == 4:
@@ -112,6 +123,7 @@ class AuthAdminService:
                 return {
                     "error": "Correo electrónico o contraseña incorrectos.",
                     "success": False,
+                    "intents": count_temp,
                 }, 401
 
             if user.user_verified == 0:
@@ -221,3 +233,15 @@ class AuthAdminService:
                 "error": str(e),
                 "success": False,
             }, 500
+
+    @staticmethod
+    def __counter_attempts(counter_temp, counter_user):
+        if counter_user >= 5 and counter_user < 9:
+            counter_temp = 4 - (counter_user - 4)
+            return counter_temp
+        elif counter_user >= 9 and counter_user < 13:
+            counter_temp = 4 - (counter_user - 8)
+            return counter_temp
+        else:
+            counter_temp = counter_temp - counter_user
+            return counter_temp

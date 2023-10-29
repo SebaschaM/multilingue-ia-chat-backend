@@ -1,4 +1,5 @@
-from app import create_app, socketio
+from app import create_app
+from src.sockets.user.socketio_events import socketio
 from sqlalchemy import text
 
 
@@ -15,4 +16,5 @@ print("Server running on port 5000")
 
 if __name__ == "__main__":
     # app.run(debug=False, port=5000, host="0.0.0.0")
-    socketio.run(app, debug=False, port=5000, host="0.0.0.0")
+    socketio.init_app(app)
+    socketio.run(app, debug=True, port=5000, host="0.0.0.0")

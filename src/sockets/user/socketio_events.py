@@ -2,7 +2,7 @@ from flask_socketio import SocketIO
 from .socketio_class import MessageHandler
 
 socketio = SocketIO(cors_allowed_origins="*")
-message_handler = MessageHandler()
+message_handler = MessageHandler(socketio_instance=socketio)
 
 
 @socketio.on("assign_user_to_room")

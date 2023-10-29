@@ -15,7 +15,6 @@ from src.sockets.user.socketio_events import (
     handle_assign_user_to_room,
     handle_send_message,
     handle_close_room,
-    socketio,
 )
 
 load_dotenv()
@@ -25,7 +24,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
-socketio.init_app(app)
+# socketio.init_app(app)
 limiter = Limiter(
     get_remote_address,
     app=app,

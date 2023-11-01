@@ -77,6 +77,7 @@ class Users(db.Model):
 
     def to_dict(self):
         return {
+            "id": self.id,
             "email": self.email,
             "fullname": self.fullname,
             "cellphone": self.cellphone,

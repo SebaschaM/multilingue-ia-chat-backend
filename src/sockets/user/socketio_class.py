@@ -1,9 +1,11 @@
 from flask import Blueprint
-from flask_socketio import join_room, emit, close_room, SocketIO
+from flask_socketio import join_room, emit, close_room
 from cryptography.fernet import Fernet
 import unicodedata
+import json
 
-# socketio = SocketIO()
+from src.database.db_pg import db
+from src.services.common.message_service import MessageService
 
 
 class MessageHandler:
@@ -12,6 +14,7 @@ class MessageHandler:
         self.cipher_suite = Fernet(self.key)
         self.private_rooms = {}
         self.socketio = socketio_instance
+        self.message_service = MessageService()
 
     def encrypt(self, message):
         encrypted_message = self.cipher_suite.encrypt(message.encode())
@@ -25,34 +28,32 @@ class MessageHandler:
 
     def assign_user_to_room(self, data):
         room_name = data["room_name"]
-        username = data["username"]
-        print(f"Usuario {username} asignado a la sala {room_name}")
+        user = data["user"]
 
         if room_name not in self.private_rooms:
-            self.private_rooms[room_name] = [username]
+            self.private_rooms[room_name] = [user]
         else:
-            if username not in self.private_rooms[room_name]:
+            if user["fullname"] not in [
+                u["fullname"] for u in self.private_rooms[room_name]
+            ]:
                 if len(self.private_rooms[room_name]) >= 2:
                     emit(
-                        "error",
+                        "error_joining_room",
                         {
                             "message": "La sala privada ya tiene 2 usuarios asignados. No puedes unirte.",
                             "success": False,
                         },
                     )
                     return
-                self.private_rooms[room_name].append(username)
+                self.private_rooms[room_name].append(user)
 
         join_room(room_name)
-        print(
-            f"Los usuarios en la sala {room_name} son: {self.private_rooms.get(room_name, [])}"
-        )
 
     def handle_send_message(self, data):
         room_name = data["room_name"]
-        username = data["username"]
+        fullname = data["fullname"]
         message = data["message"]
-        id = data["id"]
+        id_user = data["id"]
         date = data["date"]
 
         encrypted_message = self.encrypt(message)
@@ -60,40 +61,55 @@ class MessageHandler:
 
         users_in_room = self.private_rooms.get(room_name, [])
 
-        print("Nessage: ", decrypted_message)
-        if username in users_in_room:
+        # Buscar por id en el self.private rooms para recoger el usuario
+        users = self.private_rooms.get(room_name, [])
+
+        user_sender = next((user for user in users if user["id"] == id_user), None)
+
+        user_receiver = next((user for user in users if user["id"] != id_user), None)
+
+        if fullname in [u["fullname"] for u in users_in_room]:
             self.socketio.emit(
                 "get_messages",
                 data={
                     "room_name": room_name,
-                    "username": username,
+                    "fullname": user_sender["fullname"],
                     "message": message,
-                    "id": id,
+                    "id": user_sender["id"],
                     "date": date,
                 },
                 room=room_name,
             )
+            self.message_service.save_message(
+                {
+                    "id_user_sender": user_sender["id"],
+                    "id_user_receiver": user_receiver["id"],
+                    "message_text": message,
+                    "message_traslated_text": "",
+                    "message_read": 0,
+                }
+            )
 
         else:
             emit(
-                "error",
+                "error_send_message",
                 {
-                    "message": "No tienes permiso para enviar mensajes en esta sala privada."
+                    "error": "No tienes permiso para enviar mensajes en esta sala privada."
                 },
             )
 
     def handle_close_private_room(self, data):
         room_name = data["room_name"]
-        username = data["username"]
+        user = data["user"]
 
-        if username in self.private_rooms.get(room_name, []):
+        if user["fullname"] in self.private_rooms.get(room_name, []):
             del self.private_rooms[room_name]
             close_room(room_name)
             emit(
                 "private_room_closed",
                 {
                     "room_name": room_name,
-                    "message": f"Sala privada '{room_name}' cerrada por {username}.",
+                    "message": f"Sala privada '{room_name}' cerrada por {user['fullname']}.",
                 },
             )
         else:

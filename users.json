@@ -1,0 +1,3 @@
+{
+    {"id": 1, "fullname": "Jorge", "email": "jorge@gmail.com", "language": {"code_language": "es", "flag_img": "https://www.countryflags.io/es/flat/64.png", "id": 2, "name_language": "Spanish"}}, {"id": "62f94c30-38d4-410a-9cbb-6d3e2058b790", "email": "sebas@gmail.com", "fullname": "Sebas", "cellphone": "+51988673608", "token_email": "null", "token_phone": None, "language": {"id": 2, "code_language": "es", "name_language": "Spanish", "flag_img": "https://www.countryflags.io/es/flat/64.png"}, "user_verified": 1, "role": {"id": 1, "name_role": "manager"}, "attempt_counter": 0, "block_until": None, "blocked": 0, "created_at": datetime.datetime(2023, 11, 6, 11, 21, 36, 674674)}
+}

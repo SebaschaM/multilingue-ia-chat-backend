@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import uuid
 
 from src.database.db_pg import db
 
@@ -9,13 +10,14 @@ class Clients(db.Model):
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True)
+    uuid = Column(String, nullable=False, default=str(uuid.uuid4()), unique=True)
     fullname = Column(String(80))
     cellphone = Column(String(80))
     email = Column(String(80), unique=True, nullable=False)
     language_id = Column(Integer, ForeignKey("languages.id"))
     created_at = Column(DateTime, default=datetime.now())
 
-    conversations = relationship(
+    conversations_client = relationship(
         "Conversations",
         back_populates="client",
     )
@@ -46,7 +48,7 @@ class Clients(db.Model):
 
     def to_dict(self):
         return {
-            "id": self.id,
+            "id": self.uuid,
             "fullname": self.fullname,
             "cellphone": self.cellphone,
             "email": self.email,

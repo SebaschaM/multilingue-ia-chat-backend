@@ -49,6 +49,10 @@ class MessageHandler:
 
         join_room(room_name)
 
+        if len(self.private_rooms[room_name]) < 2:
+            random_user = self.message_service.get_random_user()
+            self.private_rooms[room_name].append(random_user)
+
     def handle_send_message(self, data):
         room_name = data["room_name"]
         fullname = data["fullname"]
@@ -60,12 +64,12 @@ class MessageHandler:
         decrypted_message = self.decrypt(encrypted_message)
 
         users_in_room = self.private_rooms.get(room_name, [])
-
-        # Buscar por id en el self.private rooms para recoger el usuario
         users = self.private_rooms.get(room_name, [])
 
+        # Cliente
         user_sender = next((user for user in users if user["id"] == id_user), None)
 
+        # Usuario
         user_receiver = next((user for user in users if user["id"] != id_user), None)
 
         if fullname in [u["fullname"] for u in users_in_room]:
@@ -80,8 +84,15 @@ class MessageHandler:
                 },
                 room=room_name,
             )
+            conversation_uuid = self.message_service.save_conversation(
+                {
+                    "user_id": user_receiver["id"],
+                    "client_conversation_id": user_sender["id"],
+                }
+            )
             self.message_service.save_message(
                 {
+                    "uuid_conversation": conversation_uuid,
                     "id_user_sender": user_sender["id"],
                     "id_user_receiver": user_receiver["id"],
                     "message_text": message,

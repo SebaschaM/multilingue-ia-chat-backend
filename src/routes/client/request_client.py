@@ -27,13 +27,3 @@ def register_request():
     except Exception as e:
         print(e)
         return {"error": str(e)}, 500
-
-
-@request_client_bp.route("/get-requests", methods=["GET"])
-def get_requests():
-    try:
-        response, status = RequestClientService.get_requests()
-        return jsonify(response), status
-    except Exception as e:
-        print(e)
-        return {"error": str(e)}, 500

@@ -29,6 +29,28 @@ class UserAdminService:
             }, 500
 
     @classmethod
+    def get_user(cls, user_uuid):
+        try:
+            user = Users.query.filter_by(uuid=user_uuid).first()
+            if not user:
+                return {
+                    "error": "El usuario no existe",
+                    "success": False,
+                }, 400
+
+            user_dict = user.to_dict()
+            return {
+                "user": user_dict,
+                "success": True,
+            }, 200
+        except Exception as e:
+            print(e)
+            return {
+                "error": str(e),
+                "success": False,
+            }, 500
+
+    @classmethod
     def register_user(cls, user_data):
         try:
             email = user_data["email"]

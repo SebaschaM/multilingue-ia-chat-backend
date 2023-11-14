@@ -17,6 +17,20 @@ def get_users():
         return {"error": str(e)}, 500
 
 
+@user_admin_bp.route("/get-user", methods=["GET"])
+def get_user():
+    try:
+        user_uuid = request.json.get("user_uuid")
+        if not user_uuid:
+            return jsonify({"error": "ID de usuario requerido"}), 400
+
+        response, status = UserAdminService.get_user(user_uuid)
+        return jsonify(response), status
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}, 500
+
+
 @user_admin_bp.route("/register-user", methods=["POST"])
 def register_user():
     try:

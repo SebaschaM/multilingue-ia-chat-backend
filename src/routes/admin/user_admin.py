@@ -17,14 +17,13 @@ def get_users():
         return {"error": str(e)}, 500
 
 
-@user_admin_bp.route("/get-user", methods=["GET"])
-def get_user():
+@user_admin_bp.route("/get-user/<string:user_id>", methods=["GET"])
+def get_user(user_id):
     try:
-        user_uuid = request.json.get("user_uuid")
-        if not user_uuid:
+        if not user_id:
             return jsonify({"error": "ID de usuario requerido"}), 400
 
-        response, status = UserAdminService.get_user(user_uuid)
+        response, status = UserAdminService.get_user(user_id)
         return jsonify(response), status
     except Exception as e:
         print(e)

@@ -39,6 +39,16 @@ class RequestAdminService:
             return {"error": str(e)}, 500
 
     @classmethod
+    def get_request_by_id(cls, id):
+        try:
+            request = Requests.query.get(id)
+            request = request.to_dict()
+            return {"request": request}, 200
+        except Exception as e:
+            print(e)
+            return {"error": str(e)}, 500
+
+    @classmethod
     def change_state_request(cls, data):
         try:
             request_id = data["request_id"]

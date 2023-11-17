@@ -40,6 +40,16 @@ def get_requests():
         return {"error": str(e)}, 500
 
 
+@request_admin_bp.route("/get-request-by-id/<int:id>", methods=["GET"])
+def get_request_by_id(id):
+    try:
+        response, status = RequestAdminService.get_request_by_id(id)
+        return jsonify(response), status
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}, 500
+
+
 @request_admin_bp.route("/change-state-request", methods=["PUT"])
 def change_state_request():
     try:

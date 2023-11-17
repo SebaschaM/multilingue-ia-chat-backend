@@ -21,7 +21,7 @@ class RequestAdminService:
             db.session.commit()
 
             return {
-                "message": "Request created successfully",
+                "message": "Se creo la solicitud exitosamente",
                 "success": True,
             }, 201
         except Exception as e:
@@ -60,9 +60,20 @@ class RequestAdminService:
             db.session.commit()
 
             return {
-                "message": "Request updated successfully",
+                "message": "Se actualizo el estado de la solicitud exitosamente",
                 "success": True,
             }, 200
+        except Exception as e:
+            print(e)
+            return {"error": str(e)}, 500
+
+    @classmethod
+    def delete_request(cls, id):
+        try:
+            request = Requests.query.get(id)
+            db.session.delete(request)
+            db.session.commit()
+            return {"message": "Se elimino la solicitud correctamente"}, 200
         except Exception as e:
             print(e)
             return {"error": str(e)}, 500

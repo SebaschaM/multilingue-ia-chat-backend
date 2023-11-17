@@ -68,3 +68,13 @@ def change_state_request():
     except Exception as e:
         print(e)
         return {"error": str(e)}, 500
+
+
+@request_admin_bp.route("/request-delete/<int:id>", methods=["DELETE"])
+def delete_request(id):
+    try:
+        response, status = RequestAdminService.delete_request(id)
+        return jsonify(response), status
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}, 500

@@ -1,21 +1,18 @@
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, jsonify, abort
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_socketio import SocketIO
 from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
+
 import os
 
 from src.database.db_pg import db
 from src.utils.send_mail import configure_mail
 from src.utils.schedules import Schedules
+from src.utils.keywords_sql_inyection import sql_keywords, sql_booleans
 from src.routes import blueprints
-from src.sockets.socketio_events import (
-    handle_assign_user_to_room,
-    handle_send_message,
-    handle_close_room,
-)
+
 
 load_dotenv()
 
@@ -43,6 +40,23 @@ def ratelimit_handler(e):
         ),
         429,
     )
+
+
+@app.before_request
+def before_request():
+    if request.method == "POST":
+        request_form = request.get_json() if request.is_json else request.form
+        for key, value in request_form.items():
+            if any(keyword in value.upper() for keyword in sql_keywords) or any(
+                boolean in value.upper() for boolean in sql_booleans
+            ):
+                response = jsonify(
+                    success=False,
+                    message="Entrada no válida: se ha detectado un intento de inyección SQL",
+                )
+                response.status_code = 400
+                response.headers["Content-Type"] = "application/json"
+                return response
 
 
 def create_app():

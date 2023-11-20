@@ -11,7 +11,7 @@ from src.database.db_pg import db
 from src.utils.send_mail import configure_mail
 from src.utils.schedules import Schedules
 from src.routes import blueprints
-from src.sockets.user.socketio_events import (
+from src.sockets.socketio_events import (
     handle_assign_user_to_room,
     handle_send_message,
     handle_close_room,

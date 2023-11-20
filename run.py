@@ -1,5 +1,5 @@
 from app import create_app
-from src.sockets.user.socketio_events import socketio
+from src.sockets.socketio_events import socketio
 from sqlalchemy import text
 
 

@@ -10,7 +10,7 @@ class Clients(db.Model):
     __tablename__ = "clients"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(String, nullable=False, default=str(uuid.uuid4()), unique=True)
+    uuid = Column(String, nullable=False, unique=True)
     fullname = Column(String(80))
     cellphone = Column(String(80))
     email = Column(String(80), unique=True, nullable=False)
@@ -40,6 +40,7 @@ class Clients(db.Model):
         language_id=None,
         created_at=None,
     ):
+        self.uuid = str(uuid.uuid4())
         self.email = email
         self.fullname = fullname
         self.cellphone = cellphone

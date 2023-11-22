@@ -16,7 +16,7 @@ class Sessions(db.Model):
 
     user = relationship("Users", back_populates="sessions", overlaps="user_sessions")
 
-    def to_dict():
+    def to_dict(self):
         return {
             "id": self.id,
             "user": self.user.to_dict(),

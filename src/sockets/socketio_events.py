@@ -17,9 +17,9 @@ def handle_send_message(data):
     message_handler.handle_send_message(data)
 
 
-@socketio.on("send_message_bot")
-def handle_send_message_bot(data):
-    message_bot_handler.handle_send_message(data)
+# @socketio.on("send_message_bot")
+# def handle_send_message_bot(data):
+#     message_bot_handler.handle_send_message(data)
 
 
 @socketio.on("close_room")

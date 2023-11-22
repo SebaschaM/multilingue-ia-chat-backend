@@ -46,6 +46,7 @@ def ratelimit_handler(e):
 def before_request():
     if request.method == "POST":
         request_form = request.get_json() if request.is_json else request.form
+
         for key, value in request_form.items():
             if any(keyword in value.upper() for keyword in sql_keywords) or any(
                 boolean in value.upper() for boolean in sql_booleans
@@ -57,6 +58,8 @@ def before_request():
                 response.status_code = 400
                 response.headers["Content-Type"] = "application/json"
                 return response
+
+            return None
 
 
 def create_app():

@@ -57,10 +57,15 @@ class AuthClientService:
             db.session.add(new_client)
             db.session.commit()
 
+            # get id of the new client
+            client = Clients.query.filter_by(email=user_data["email"]).first()
+            client_dict = client.to_dict()
+
             return {
                 "message": "Cliente registrado en la base de datos",
                 "client_exists": False,
                 "success": True,
+                "user": client_dict,
             }, 201
 
         except Exception as e:

@@ -53,6 +53,6 @@ class Clients(db.Model):
             "fullname": self.fullname,
             "cellphone": self.cellphone,
             "email": self.email,
-            "language_id": self.language_id,
+            "language": self.language.to_dict(),
             "created_at": self.created_at,
         }

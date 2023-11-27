@@ -1,13 +1,9 @@
 # Database
-from flask import current_app
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import uuid
 
 from src.database.db_pg import db
 from src.models.clients import Clients
-from src.utils.security import Security
-from src.utils.send_mail import send_email, configure_mail
 
 
 class AuthClientService:

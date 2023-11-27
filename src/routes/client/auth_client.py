@@ -10,7 +10,6 @@ auth_client_bp = Blueprint("client/auth", __name__)
 def verify_email_exists():
     try:
         email = request.json.get("email")
-        print(email)
         if not email:
             return jsonify({"error": "Correo electrónico requerido"}), 400
 

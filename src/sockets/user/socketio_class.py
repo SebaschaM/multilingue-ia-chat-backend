@@ -6,6 +6,7 @@ import json
 
 from src.database.db_pg import db
 from src.services.common.message_service import MessageService
+from src.services.common.aws_translate import translate_text
 
 
 class MessageHandler:
@@ -71,6 +72,11 @@ class MessageHandler:
 
         # Usuario
         user_receiver = next((user for user in users if user["id"] != id_user), None)
+        user_receiver_language = user_receiver["language"]["code_language"]
+
+        message_translated = translate_text(
+            message, source="auto", target=str(user_receiver_language)
+        )
 
         if fullname in [u["fullname"] for u in users_in_room]:
             self.socketio.emit(
@@ -79,6 +85,7 @@ class MessageHandler:
                     "room_name": room_name,
                     "fullname": user_sender["fullname"],
                     "message": message,
+                    "message_translated": message_translated,
                     "id": user_sender["id"],
                     "date": date,
                 },
@@ -96,7 +103,7 @@ class MessageHandler:
                     "id_user_sender": user_sender["id"],
                     "id_user_receiver": user_receiver["id"],
                     "message_text": message,
-                    "message_traslated_text": "",
+                    "message_traslated_text": message_translated,
                     "message_read": 0,
                 }
             )

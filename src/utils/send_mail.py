@@ -24,8 +24,8 @@ def send_email(mail, email, name, token=None):
     verification_link = (
         f"http://localhost:5000/api/admin/auth/verify-email?token={token}"
     )
-    print(token, "tokenvalidar")
-    print(verification_link, "linkvalidar")
+    # print(token, "tokenvalidar")
+    # print(verification_link, "linkvalidar")
 
     try:
         msg = Message(

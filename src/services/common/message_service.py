@@ -24,13 +24,13 @@ class MessageService:
     @classmethod
     def save_conversation(cls, data):
         try:
-            print("DATA: " + str(data))
+            # print("DATA: " + str(data))
             conversation_exists = Conversations.query.filter(
                 (Conversations.user_id == data["user_id"])
                 | (Conversations.user_id == data["client_conversation_id"])
             ).first()
 
-            print("CONVERSATION EXISTS: " + str(conversation_exists))
+            # print("CONVERSATION EXISTS: " + str(conversation_exists))
             # None, conversation no existe
 
             if conversation_exists:

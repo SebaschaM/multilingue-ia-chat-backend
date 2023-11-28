@@ -7,7 +7,7 @@ from src.services.common.message_service import MessageService
 
 
 class MessageBotHandler:
-    api_key = ""
+    api_key = "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"
     context_file = "context.txt"
     context = ""
     context_initialized = False
@@ -50,7 +50,7 @@ class MessageBotHandler:
 
         # Actualizar el contexto con la respuesta generada por ChatGPT
         # context = response.choices[0].text.encode("cp1252").decode()
-        context = response.choices[0].text
+        context = response.choices[0].text.strip()
         print(context)
         self.socketio.emit(
             "response_bot",

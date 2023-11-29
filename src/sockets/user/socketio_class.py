@@ -31,6 +31,12 @@ class MessageHandler:
         room_name = data["room_name"]
         user = data["user"]
 
+        # print()
+        # print("ASSIGN USER TO ROOM: " + str(user))
+        # print()
+
+        # print("ASSIGN USER TO ROOM: " + str(user))
+
         if room_name not in self.private_rooms:
             self.private_rooms[room_name] = [user]
         else:
@@ -54,12 +60,17 @@ class MessageHandler:
             random_user = self.message_service.get_random_user()
             self.private_rooms[room_name].append(random_user)
 
+        users = self.private_rooms.get(room_name, [])
+        # print("USERS: " + str(users))
+
     def handle_send_message(self, data):
         room_name = data["room_name"]
         fullname = data["fullname"]
         message = data["message"]
         id_user = data["id"]
         date = data["date"]
+
+        # print("SALAS ACRTUALES: " + str(self.private_rooms))
 
         encrypted_message = self.encrypt(message)
         decrypted_message = self.decrypt(encrypted_message)
@@ -79,24 +90,15 @@ class MessageHandler:
         )
 
         if fullname in [u["fullname"] for u in users_in_room]:
-            self.socketio.emit(
-                "get_messages",
-                data={
-                    "room_name": room_name,
-                    "fullname": user_sender["fullname"],
-                    "message": message,
-                    "message_translated": message_translated,
-                    "id": user_sender["id"],
-                    "date": date,
-                },
-                room=room_name,
-            )
             conversation_uuid = self.message_service.save_conversation(
                 {
                     "user_id": user_receiver["id"],
                     "client_conversation_id": user_sender["id"],
+                    "room_name": room_name,
                 }
             )
+
+            print("CONVERSATION UUID: " + str(conversation_uuid))
             self.message_service.save_message(
                 {
                     "uuid_conversation": conversation_uuid,
@@ -107,6 +109,21 @@ class MessageHandler:
                     "message_read": 0,
                 }
             )
+            self.socketio.emit(
+                "get_messages",
+                data={
+                    "room_name": room_name,
+                    "fullname": user_sender["fullname"],
+                    "message_text": message,
+                    "message_traslated_text": message_translated,
+                    "id": user_sender["id"],
+                    "id_user_sender": user_sender["id"],
+                    "id_user_receiver": user_receiver["id"],
+                    "date": date,
+                },
+                room=room_name,
+            )
+            print("Emitio")
 
         else:
             emit(

@@ -9,7 +9,8 @@ class Conversations(db.Model):
     __tablename__ = "conversations"
 
     id = Column(Integer, primary_key=True)
-    uuid = Column(String, nullable=False, default=str(uuid.uuid4()))
+    uuid = Column(String, nullable=False)
+    rooom_name = Column(String)
     user_id = Column(String, ForeignKey("users.uuid"))
     client_conversation_id = Column(String, ForeignKey("clients.uuid"))
     reason_contact = Column(String, nullable=True)
@@ -32,20 +33,22 @@ class Conversations(db.Model):
         self,
         user_id,
         client_conversation_id,
+        room_name=None,
         reason_contact=None,
         state=1,
-        uuid=None,
     ):
         self.user_id = user_id
         self.client_conversation_id = client_conversation_id
+        self.rooom_name = room_name
         self.reason_contact = reason_contact
         self.state = state
-        self.uuid = uuid
+        self.uuid = str(uuid.uuid4())
 
     def to_dict(self):
         return {
             "id": self.id,
             "uuid": self.uuid,
+            "room_name": self.rooom_name,
             "user": self.user.to_dict(),
             "client_conversation": self.client.to_dict(),
             "reason_contact": self.reason_contact,

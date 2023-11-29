@@ -22,13 +22,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 # socketio.init_app(app)
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["15 per minute"],
-    storage_uri="memory://",
-    strategy="fixed-window",
-)
+# limiter = Limiter(
+#     get_remote_address,
+#     app=app,
+#     default_limits=["15 per minute"],
+#     storage_uri="memory://",
+#     strategy="fixed-window",
+# )
 
 
 @app.errorhandler(429)

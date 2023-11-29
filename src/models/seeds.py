@@ -142,3 +142,23 @@ def create_seed():
             db.session.add(language)
 
     db.session.commit()
+
+    # INSERT LANGUAGES
+    users = [
+        {
+            "email": "sebas@gmail.com",
+            "password": "pbkdf2:sha256:600000$1xsdhy8U3aG1CMat$63e2f474daf974fcad1fa91bf0de25e2639cbdd6c91c70dcaef2fac9a12e1367",
+            "fullname": "Sebastian",
+            "cellphone": "+51988673608",
+            "language_id": 2,
+            "role_id": 1,
+        }
+    ]
+
+    for user_data in users:
+        user = Users.query.filter_by(email=user_data["email"]).first()
+        if user is None:
+            user = Users(**user_data)
+            db.session.add(user)
+
+    db.session.commit()

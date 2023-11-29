@@ -2,6 +2,7 @@ from src.database.db_pg import db
 from src.models.conversations import Conversations
 from src.models.messages import Messages
 from src.models.users import Users
+from sqlalchemy import or_, and_
 
 from sqlalchemy import tablesample, func
 
@@ -24,27 +25,53 @@ class MessageService:
     @classmethod
     def save_conversation(cls, data):
         try:
-            # print("DATA: " + str(data))
+            print("DATA CONVERSATION: " + str(data))
+            # conversation_exists = Conversations.query.filter(
+            #     (Conversations.user_id == data["user_id"])
+            #     & (Conversations.user_id == data["client_conversation_id"])
+            # ).first()
             conversation_exists = Conversations.query.filter(
-                (Conversations.user_id == data["user_id"])
-                | (Conversations.user_id == data["client_conversation_id"])
+                or_(
+                    and_(
+                        Conversations.user_id == data["user_id"],
+                        Conversations.client_conversation_id
+                        == data["client_conversation_id"],
+                    ),
+                    and_(
+                        Conversations.user_id == data["client_conversation_id"],
+                        Conversations.client_conversation_id == data["user_id"],
+                    ),
+                )
             ).first()
 
-            # print("CONVERSATION EXISTS: " + str(conversation_exists))
-            # None, conversation no existe
+            # print("CONVERSATION EXISTS: " + str(conversation_exists.to_dict()))
 
             if conversation_exists:
+                print("existe")
                 conversation_uuid = conversation_exists.uuid
+                # new_conversation = Conversations(
+                #     user_id=data["user_id"],
+                #     client_conversation_id=data["client_conversation_id"],
+                #     room_name=data["room_name"],
+                # )
+
+                # db.session.add(new_conversation)
+                # db.session.commit()
+
+                # conversation_uuid = new_conversation.uuid
             else:
+                print("no existe")
                 new_conversation = Conversations(
                     user_id=data["user_id"],
                     client_conversation_id=data["client_conversation_id"],
+                    room_name=data["room_name"],
                 )
 
                 db.session.add(new_conversation)
                 db.session.commit()
 
                 conversation_uuid = new_conversation.uuid
+                print("guardando")
 
             return conversation_uuid
         except Exception as e:
@@ -53,7 +80,7 @@ class MessageService:
 
     @classmethod
     def save_message(cls, data):
-        print("DATA: " + str(data))
+        # print("DATA: " + str(data))
         try:
             message = Messages(
                 uuid_conversation=data["uuid_conversation"],

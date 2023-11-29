@@ -7,7 +7,7 @@ from src.services.common.message_service import MessageService
 
 
 class MessageBotHandler:
-    api_key = "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"  #! No subirlo
+    api_key = ""  #! No subirlo
     context_file = "context.txt"
     context = ""
     context_initialized = False

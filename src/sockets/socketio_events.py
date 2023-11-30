@@ -27,6 +27,6 @@ def handle_close_room(data):
     message_handler.handle_close_private_room(data)
 
 
-@socketio.on("respuesta_de_bot")
+@socketio.on("send_message_gpt")
 def handle_get_response_gpt(data):
     message_bot_handler.interact_with_chatgpt(data)

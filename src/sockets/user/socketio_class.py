@@ -1,10 +1,7 @@
-from flask import Blueprint
 from flask_socketio import join_room, emit, close_room
 from cryptography.fernet import Fernet
 import unicodedata
-import json
 
-from src.database.db_pg import db
 from src.services.common.message_service import MessageService
 from src.services.common.aws_translate import translate_text
 
@@ -30,12 +27,6 @@ class MessageHandler:
     def assign_user_to_room(self, data):
         room_name = data["room_name"]
         user = data["user"]
-
-        # print()
-        # print("ASSIGN USER TO ROOM: " + str(user))
-        # print()
-
-        # print("ASSIGN USER TO ROOM: " + str(user))
 
         if room_name not in self.private_rooms:
             self.private_rooms[room_name] = [user]
@@ -90,15 +81,16 @@ class MessageHandler:
         )
 
         if fullname in [u["fullname"] for u in users_in_room]:
-            conversation_uuid = self.message_service.save_conversation(
+            (
+                conversation_uuid,
+                exist_conversation,
+            ) = self.message_service.save_conversation(
                 {
                     "user_id": user_receiver["id"],
                     "client_conversation_id": user_sender["id"],
                     "room_name": room_name,
                 }
             )
-
-            print("CONVERSATION UUID: " + str(conversation_uuid))
             self.message_service.save_message(
                 {
                     "uuid_conversation": conversation_uuid,
@@ -123,6 +115,12 @@ class MessageHandler:
                 },
                 room=room_name,
             )
+
+            print("EXISTE CONVERSACION: " + str(exist_conversation))
+            if not exist_conversation:
+                print("Emitiendo que si existe")
+                self.socketio.emit("update_conversations", data={"update": True})
+
             print("Emitio")
 
         else:

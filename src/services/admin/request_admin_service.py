@@ -11,7 +11,7 @@ class RequestAdminService:
                 date_attention=data["date_attention"],
                 reason=data["reason"],
                 destination_area=data["destination_area"],
-                request_type_id=2,  # 1: Typification, 2: Scheduling
+                request_type_id=data["request_type_id"],
                 status_id=2,
                 user_id=data["user_id"],
                 client_id=data["client_id"],

@@ -9,7 +9,7 @@ class Requests(db.Model):
     __tablename__ = "requests"
 
     id = Column(Integer, primary_key=True)
-    date_attention = Column(Date)
+    date_attention = Column(Date, nullable=True)
     reason = Column(String(80))
     destination_area = Column(String(80))
     request_type_id = Column(Integer, ForeignKey("request_types.id"))

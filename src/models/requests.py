@@ -9,7 +9,7 @@ class Requests(db.Model):
     __tablename__ = "requests"
 
     id = Column(Integer, primary_key=True)
-    date_attention = Column(Date, nullable=True)
+    date_attention = Column(String(80), default=None, nullable=True)
     reason = Column(String(80))
     destination_area = Column(String(80))
     request_type_id = Column(Integer, ForeignKey("request_types.id"))
@@ -37,7 +37,6 @@ class Requests(db.Model):
 
     def __init__(
         self,
-        date_attention,
         reason,
         destination_area,
         request_type_id,
@@ -45,6 +44,7 @@ class Requests(db.Model):
         user_id,
         client_id,
         created_at=None,
+        date_attention=None,
     ):
         self.date_attention = date_attention
         self.reason = reason

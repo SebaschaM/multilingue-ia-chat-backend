@@ -42,24 +42,24 @@ def ratelimit_handler(e):
     )
 
 
-@app.before_request
-def before_request():
-    if request.method == "POST":
-        request_form = request.get_json() if request.is_json else request.form
+# @app.before_request
+# def before_request():
+#     if request.method == "POST":
+#         request_form = request.get_json() if request.is_json else request.form
 
-        for key, value in request_form.items():
-            if any(keyword in value.upper() for keyword in sql_keywords) or any(
-                boolean in value.upper() for boolean in sql_booleans
-            ):
-                response = jsonify(
-                    success=False,
-                    message="Entrada no válida: se ha detectado un intento de inyección SQL",
-                )
-                response.status_code = 400
-                response.headers["Content-Type"] = "application/json"
-                return response
+#         for key, value in request_form.items():
+#             if any(keyword in value.upper() for keyword in sql_keywords) or any(
+#                 boolean in value.upper() for boolean in sql_booleans
+#             ):
+#                 response = jsonify(
+#                     success=False,
+#                     message="Entrada no válida: se ha detectado un intento de inyección SQL",
+#                 )
+#                 response.status_code = 400
+#                 response.headers["Content-Type"] = "application/json"
+#                 return response
 
-            return None
+#             return None
 
 
 def create_app():

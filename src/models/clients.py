@@ -50,6 +50,7 @@ class Clients(db.Model):
     def to_dict(self):
         return {
             "id": self.uuid,
+            "idv2": self.id,
             "fullname": self.fullname,
             "cellphone": self.cellphone,
             "email": self.email,

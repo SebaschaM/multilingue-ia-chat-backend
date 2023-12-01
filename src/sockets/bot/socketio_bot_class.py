@@ -8,7 +8,8 @@ from src.services.common.message_service import MessageService
 
 class MessageBotHandler:
     api_key = ""  #! No subirlo
-    context_file = "context.txt"
+    # context_file = "context.txt"
+    context_file = ""
     context = ""
     context_initialized = False
 
@@ -30,8 +31,26 @@ class MessageBotHandler:
         decrypted_message = unicodedata.normalize("NFKD", decrypted_message)
         return decrypted_message
 
-    def read_context_from_file(self, file_path, areaProcess=""):
-        with open(file_path, "r") as file:
+    def read_context_from_file(self, areaProcess=""):
+        if areaProcess == "analitica_web":
+            self.context_file = "analitica_web.txt"
+
+        if areaProcess == "email_marketing":
+            self.context_file = "email_marketing.txt"
+
+        if areaProcess == "marketing_contenidos":
+            self.context_file = "marketing_contenidos.txt"
+
+        if areaProcess == "publicidad_linea":
+            self.context_file = "publicidad_linea.txt"
+
+        if areaProcess == "redes_sociales":
+            self.context_file = "redes_sociales.txt"
+
+        if areaProcess == "seo":
+            self.context_file = "seo.txt"
+
+        with open(self.context_file, "r") as file:
             return file.read()
 
     def interact_with_chatgpt(self, data):
@@ -40,13 +59,13 @@ class MessageBotHandler:
         areaProcess = data["areaProcess"]
         message = message.lower()
 
-        self.context = self.read_context_from_file(self.context_file, areaProcess)
+        self.context = self.read_context_from_file(areaProcess)
 
         prompt = self.context + "\n" + message
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
-            max_tokens=10,
+            max_tokens=200,
             temperature=0.7,
             api_key=self.api_key,
         )

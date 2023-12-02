@@ -166,5 +166,27 @@ class DashBoardService:
                 "success": False,
                 "error": error_dict
             }, indent=2), 500
-
         
+    
+    def total_of_users():
+        try:
+            total_users = db.session.query(func.count()).select_from(Users).scalar()
+
+            result_dict = {
+                'total_users': total_users,
+            }
+
+            print(result_dict)
+            return {
+                "message": "Datos de usuarios obtenidos exitosamente.",
+                "success": True,
+                "data": result_dict
+            }, 200
+
+        except Exception as e:
+            error_dict = {'error': f"Error en la consulta: {str(e)}"}
+            return json.dumps({
+                "message": "Error al obtener los datos de usuarios.",
+                "success": False,
+                "error": error_dict
+            }, indent=2), 500

@@ -52,3 +52,12 @@ def get_count_chats_by_hour():
         print(e)
         return {"error": str(e)}, 500
     
+@dashboard_admin_bp.route("/get_total_of_users", methods=["GET"])
+def get_total_of_users():
+    try:
+        response, status = DashBoardService.total_of_users()
+        return jsonify(response), status
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}, 500
+    

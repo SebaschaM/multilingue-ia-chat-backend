@@ -146,9 +146,9 @@ def create_seed():
     # INSERT LANGUAGES
     users = [
         {
-            "email": "sebas@gmail.com",
+            "email": "admin@gmail.com",
             "password": "pbkdf2:sha256:600000$1xsdhy8U3aG1CMat$63e2f474daf974fcad1fa91bf0de25e2639cbdd6c91c70dcaef2fac9a12e1367",
-            "fullname": "Sebastian",
+            "fullname": "Admin",
             "cellphone": "+51988673608",
             "language_id": 2,
             "role_id": 1,
@@ -160,5 +160,9 @@ def create_seed():
         if user is None:
             user = Users(**user_data)
             db.session.add(user)
+
+            # update user fullname
+            user.user_verified = 1
+            user.token_email = None
 
     db.session.commit()

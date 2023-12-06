@@ -4,6 +4,7 @@ import unicodedata
 import openai
 
 from src.services.common.message_service import MessageService
+from src.services.common.aws_translate import translate_text
 
 
 class MessageBotHandler:
@@ -57,6 +58,7 @@ class MessageBotHandler:
         message = data["message"]
         room_name = data["room_name"]
         areaProcess = data["areaProcess"]
+        code_language = data["code_language"]
         message = message.lower()
 
         self.context = self.read_context_from_file(areaProcess)
@@ -73,9 +75,10 @@ class MessageBotHandler:
         # Actualizar el contexto con la respuesta generada por ChatGPT
         # context = response.choices[0].text.encode("cp1252").decode()
         context = response.choices[0].text.strip()
+        context_translated = translate_text(context, target=code_language)
         print(context)
         self.socketio.emit(
             "get_messages_gpt",
-            {"room_name": room_name, "message": context, "user": "Bot"},
+            {"room_name": room_name, "message": context_translated, "user": "Bot"},
             room=room_name,
         )

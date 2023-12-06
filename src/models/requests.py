@@ -10,7 +10,7 @@ class Requests(db.Model):
 
     id = Column(Integer, primary_key=True)
     date_attention = Column(String(80), default=None, nullable=True)
-    reason = Column(String(80))
+    reason = Column(String(500))
     destination_area = Column(String(80))
     request_type_id = Column(Integer, ForeignKey("request_types.id"))
     status_id = Column(Integer, ForeignKey("statuses.id"))

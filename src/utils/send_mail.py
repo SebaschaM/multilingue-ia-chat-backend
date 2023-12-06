@@ -69,7 +69,7 @@ def send_email(mail, email, name, token=None):
             <body>
                 <div class="container">
                 <img
-                    src="https://logosmarcas.net/wp-content/uploads/2020/09/Microsoft-Logo.png"
+                    src="https://exe.digital/assets/img/logo-exe-color.webp?20231206113926"
                     alt="Logo de la aplicación"
                     width="150"
                 />

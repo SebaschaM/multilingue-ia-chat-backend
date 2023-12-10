@@ -8,8 +8,7 @@ from src.services.common.aws_translate import translate_text
 
 
 class MessageBotHandler:
-    api_key = ""  #! No subirlo
-    # context_file = "context.txt"
+    api_key = "YOUR_API_KEY"
     context_file = ""
     context = ""
     context_initialized = False
@@ -72,7 +71,6 @@ class MessageBotHandler:
             api_key=self.api_key,
         )
 
-        # Actualizar el contexto con la respuesta generada por ChatGPT
         # context = response.choices[0].text.encode("cp1252").decode()
         context = response.choices[0].text.strip()
         context_translated = translate_text(context, target=code_language)

@@ -21,14 +21,14 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
-# socketio.init_app(app)
-# limiter = Limiter(
-#     get_remote_address,
-#     app=app,
-#     default_limits=["15 per minute"],
-#     storage_uri="memory://",
-#     strategy="fixed-window",
-# )
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["100 per minute"],
+    storage_uri="memory://",
+    strategy="fixed-window",
+)
 
 
 @app.errorhandler(429)
@@ -42,24 +42,28 @@ def ratelimit_handler(e):
     )
 
 
-# @app.before_request
-# def before_request():
-#     if request.method == "POST":
-#         request_form = request.get_json() if request.is_json else request.form
+@app.before_request
+def before_request():
+    if request.method == "POST":
+        request_form = request.get_json() if request.is_json else request.form
 
-#         for key, value in request_form.items():
-#             if any(keyword in value.upper() for keyword in sql_keywords) or any(
-#                 boolean in value.upper() for boolean in sql_booleans
-#             ):
-#                 response = jsonify(
-#                     success=False,
-#                     message="Entrada no válida: se ha detectado un intento de inyección SQL",
-#                 )
-#                 response.status_code = 400
-#                 response.headers["Content-Type"] = "application/json"
-#                 return response
+        for key, value in request_form.items():
+            if isinstance(value, str):
+                words = value.upper().split()
+                if any(keyword in words for keyword in sql_keywords) or any(
+                    boolean in words for boolean in sql_booleans
+                ):
+                    print("SQL INJECTION DETECTED")
+                    print(value)
+                    response = jsonify(
+                        success=False,
+                        message="Entrada no válida: se ha detectado un intento de inyección SQL",
+                    )
+                    response.status_code = 400
+                    response.headers["Content-Type"] = "application/json"
+                    return response
 
-#             return None
+        return None
 
 
 def create_app():
@@ -67,8 +71,19 @@ def create_app():
         app.register_blueprint(blueprint)
 
     mail = configure_mail(app)
-    programador = BackgroundScheduler(daemon=True)
-    programador.add_job(Schedules.block_users, "interval", seconds=10, args=(app, db))
-    programador.start()
+    scheduler_block_users = BackgroundScheduler(daemon=True)
+    scheduler_block_users.add_job(
+        Schedules.block_users, "interval", seconds=10, args=(app, db)
+    )
+    scheduler_block_users.start()
+
+    scheduler_inactive_notification = BackgroundScheduler(daemon=True)
+    scheduler_inactive_notification.add_job(
+        Schedules.verification_notifications_change_to_desactive,
+        "interval",
+        seconds=10,
+        args=(app, db),
+    )
+    scheduler_inactive_notification.start()
 
     return app

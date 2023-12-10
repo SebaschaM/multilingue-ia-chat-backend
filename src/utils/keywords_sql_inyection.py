@@ -6,7 +6,7 @@ sql_keywords = [
     "FROM",
     "JOIN",
     "WHERE",
-    # "OR",
+    "OR",
     "AND",
     "DROP",
     "TABLE",

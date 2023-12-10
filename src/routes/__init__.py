@@ -4,6 +4,7 @@ from src.routes.admin.user_admin import user_admin_bp
 from src.routes.admin.messages_admin import messages_admin_bp
 from src.routes.admin.request_admin import request_admin_bp
 from src.routes.admin.dash_board_admin import dashboard_admin_bp
+from src.routes.admin.notification_admin import notification_admin_bp
 
 
 # Prefix for all routes admin
@@ -12,6 +13,7 @@ user_admin_bp.url_prefix = "/api/admin/user"
 messages_admin_bp.url_prefix = "/api/admin/messages"
 request_admin_bp.url_prefix = "/api/admin/request"
 dashboard_admin_bp.url_prefix = "/api/admin/dashboard"
+notification_admin_bp.url_prefix = "/api/admin/notification"
 
 
 # import all routes client
@@ -29,6 +31,7 @@ blueprints = [
     messages_admin_bp,
     request_admin_bp,
     dashboard_admin_bp,
+    notification_admin_bp,
     auth_client_bp,
     request_client_bp,
 ]

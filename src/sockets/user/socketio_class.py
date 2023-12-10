@@ -76,9 +76,15 @@ class MessageHandler:
         user_receiver = next((user for user in users if user["id"] != id_user), None)
         user_receiver_language = user_receiver["language"]["code_language"]
 
+        # message_translated = translate_text(
+        #     message, source="auto", target=str(user_receiver_language)
+        # )
+
         message_translated = translate_text(
-            message, source="auto", target=str(user_receiver_language)
+            decrypted_message, source="auto", target=str(user_receiver_language)
         )
+
+        encrypted_message_translated = self.encrypt(message_translated)
 
         if fullname in [u["fullname"] for u in users_in_room]:
             (
@@ -96,7 +102,8 @@ class MessageHandler:
                     "uuid_conversation": conversation_uuid,
                     "id_user_sender": user_sender["id"],
                     "id_user_receiver": user_receiver["id"],
-                    "message_text": message,
+                    # "message_text": message,
+                    "message_text": decrypted_message,
                     "message_traslated_text": message_translated,
                     "message_read": 0,
                 }
@@ -106,8 +113,9 @@ class MessageHandler:
                 data={
                     "room_name": room_name,
                     "fullname": user_sender["fullname"],
-                    "message_text": message,
-                    "message_traslated_text": message_translated,
+                    # "message_text": message,
+                    "message_text": encrypted_message,
+                    "message_traslated_text": encrypted_message_translated,
                     "id": user_sender["id"],
                     "id_user_sender": user_sender["id"],
                     "id_user_receiver": user_receiver["id"],
@@ -116,12 +124,8 @@ class MessageHandler:
                 room=room_name,
             )
 
-            print("EXISTE CONVERSACION: " + str(exist_conversation))
             if not exist_conversation:
-                print("Emitiendo que si existe")
                 self.socketio.emit("update_conversations", data={"update": True})
-
-            print("Emitio")
 
         else:
             emit(

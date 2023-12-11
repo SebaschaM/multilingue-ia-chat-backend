@@ -1,5 +1,7 @@
 from flask_socketio import join_room, emit, close_room
 from cryptography.fernet import Fernet
+from cryptography.fernet import InvalidToken
+
 import unicodedata
 import base64
 
@@ -14,23 +16,30 @@ class MessageHandler:
         self.private_rooms = {}
         self.socketio = socketio_instance
         self.message_service = MessageService()
-        clave_codificada = base64.urlsafe_b64encode(self.key).decode("utf-8")
+        self.clave_codificada = base64.urlsafe_b64encode(self.key).decode("utf-8")
+        print(self.clave_codificada, "key codificada")
+        print(self.key, "key2")
+        
 
     def encrypt(self, message):
         encrypted_message = self.cipher_suite.encrypt(message.encode())
         return encrypted_message.decode("ascii")
 
     def decrypt(self, encrypted_message):
-        decrypted_message = self.cipher_suite.decrypt(encrypted_message.encode("ascii"))
-        decrypted_message = decrypted_message.decode("utf-8")
-        decrypted_message = unicodedata.normalize("NFKD", decrypted_message)
-        return decrypted_message
+        try:
+            decrypted_message = self.cipher_suite.decrypt(encrypted_message.encode("ascii"))
+            decrypted_message = decrypted_message.decode("utf-8")
+            decrypted_message = unicodedata.normalize("NFKD", decrypted_message)
+            return decrypted_message
+        except InvalidToken as e:
+            print(f"Error al descifrar el token: {e}")        
+
 
     def send_fernet_key_base_64(self):
         emit(
             "send_fernet_key_base_64",
             {
-                "key": base64.urlsafe_b64encode(self.key).decode("utf-8"),
+                "key": self.clave_codificada,
             },
         )
 
@@ -76,7 +85,9 @@ class MessageHandler:
 
         # encrypted_message = self.encrypt(message)
         # decrypted_message = self.decrypt(encrypted_message)
+        print(message, "RECIBIDO")
         decrypted_message = self.decrypt(message)  # Hacer cambios en el front
+        print(decrypted_message)
 
         users_in_room = self.private_rooms.get(room_name, [])
         users = self.private_rooms.get(room_name, [])

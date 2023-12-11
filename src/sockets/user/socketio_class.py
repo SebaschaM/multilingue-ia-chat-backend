@@ -1,6 +1,7 @@
 from flask_socketio import join_room, emit, close_room
 from cryptography.fernet import Fernet
 import unicodedata
+import base64
 
 from src.services.common.message_service import MessageService
 from src.services.common.aws_translate import translate_text
@@ -13,6 +14,7 @@ class MessageHandler:
         self.private_rooms = {}
         self.socketio = socketio_instance
         self.message_service = MessageService()
+        clave_codificada = base64.urlsafe_b64encode(self.key).decode("utf-8")
 
     def encrypt(self, message):
         encrypted_message = self.cipher_suite.encrypt(message.encode())
@@ -23,6 +25,14 @@ class MessageHandler:
         decrypted_message = decrypted_message.decode("utf-8")
         decrypted_message = unicodedata.normalize("NFKD", decrypted_message)
         return decrypted_message
+
+    def send_fernet_key_base_64(self):
+        emit(
+            "send_fernet_key_base_64",
+            {
+                "key": base64.urlsafe_b64encode(self.key).decode("utf-8"),
+            },
+        )
 
     def assign_user_to_room(self, data):
         room_name = data["room_name"]
@@ -46,6 +56,7 @@ class MessageHandler:
                 self.private_rooms[room_name].append(user)
 
         join_room(room_name)
+        self.send_fernet_key_base_64()
 
         if len(self.private_rooms[room_name]) < 2:
             random_user = self.message_service.get_random_user()
@@ -57,14 +68,15 @@ class MessageHandler:
     def handle_send_message(self, data):
         room_name = data["room_name"]
         fullname = data["fullname"]
-        message = data["message"]
+        message = data["message"]  # Encriptado
         id_user = data["id"]
         date = data["date"]
 
         # print("SALAS ACRTUALES: " + str(self.private_rooms))
 
-        encrypted_message = self.encrypt(message)
-        decrypted_message = self.decrypt(encrypted_message)
+        # encrypted_message = self.encrypt(message)
+        # decrypted_message = self.decrypt(encrypted_message)
+        decrypted_message = self.decrypt(message)  # Hacer cambios en el front
 
         users_in_room = self.private_rooms.get(room_name, [])
         users = self.private_rooms.get(room_name, [])
@@ -114,12 +126,13 @@ class MessageHandler:
                     "room_name": room_name,
                     "fullname": user_sender["fullname"],
                     # "message_text": message,
-                    "message_text": encrypted_message,
-                    "message_traslated_text": encrypted_message_translated,
+                    "message_text": message,  # tal cual el front
+                    "message_traslated_text": encrypted_message_translated,  # modificacion del backend para la traduccion
                     "id": user_sender["id"],
                     "id_user_sender": user_sender["id"],
                     "id_user_receiver": user_receiver["id"],
                     "date": date,
+                    "key": self.key,
                 },
                 room=room_name,
             )

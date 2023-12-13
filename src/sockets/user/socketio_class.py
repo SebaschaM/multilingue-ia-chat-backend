@@ -19,7 +19,6 @@ class MessageHandler:
         self.clave_codificada = base64.urlsafe_b64encode(self.key).decode("utf-8")
         print(self.clave_codificada, "key codificada")
         print(self.key, "key2")
-        
 
     def encrypt(self, message):
         encrypted_message = self.cipher_suite.encrypt(message.encode())
@@ -27,13 +26,14 @@ class MessageHandler:
 
     def decrypt(self, encrypted_message):
         try:
-            decrypted_message = self.cipher_suite.decrypt(encrypted_message.encode("ascii"))
+            decrypted_message = self.cipher_suite.decrypt(
+                encrypted_message.encode("ascii")
+            )
             decrypted_message = decrypted_message.decode("utf-8")
             decrypted_message = unicodedata.normalize("NFKD", decrypted_message)
             return decrypted_message
         except InvalidToken as e:
-            print(f"Error al descifrar el token: {e}")        
-
+            print(f"Error al descifrar el token: {e}")
 
     def send_fernet_key_base_64(self):
         emit(

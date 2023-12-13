@@ -10,8 +10,8 @@ class NotificationAdminService:
     def register_notification(cls, data):
         try:
             message = data["message"]
-            start_time = data["start_time"]
-            end_time = data["end_time"]
+            start_time = data["start_date"]
+            end_time = data["end_date"]
 
             notification = Notifications(
                 message=message,

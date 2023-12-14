@@ -22,7 +22,7 @@ def send_email(mail, email, name, token=None):
     expiration_time_str = expiration_time.strftime("%Y-%m-%d %H:%M:%S")
     # verification_link = f"https://tuaplicacion.com/verificar?token={token}"
     verification_link = (
-        f"http://localhost:5000/api/admin/auth/verify-email?token={token}"
+        f"http://localhost:5173/api/admin/auth/verify-email?token={token}"
     )
     # print(token, "tokenvalidar")
     # print(verification_link, "linkvalidar")

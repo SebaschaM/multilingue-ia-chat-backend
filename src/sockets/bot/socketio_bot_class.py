@@ -2,14 +2,15 @@ from cryptography.fernet import Fernet
 from flask_socketio import emit
 import unicodedata
 import openai
+import os
+
 
 from src.services.common.message_service import MessageService
 from src.services.common.aws_translate import translate_text
 
 
 class MessageBotHandler:
-    api_key = "YOUR_API_KEY"
-    context_file = ""
+    api_key = os.getenv("API_KEY")
     context = ""
     context_initialized = False
 
